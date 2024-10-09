@@ -128,7 +128,7 @@ const Usersection = () => {
                     </div>
                     
                     <div className="row g-20">
-                        {userData?.map((user) => <div className="col-xl-3 col-md-4 col-sm-6">
+                        {userData?.map((user) => <div key={user.id} className="col-xl-3 col-md-4 col-sm-6">
                             <div className="mentor-card rounded-8 overflow-hidden">
                                 <div className="mentor-card__cover position-relative">
                                     <img src={user?.cover ? `${process.env.NEXT_PUBLIC_HOST}/storage/${user?.cover}` : "/assets/images/setting_cover_img.png"} alt="" className="cover-img" />
@@ -147,7 +147,7 @@ const Usersection = () => {
                                     <h5 className="mb-0">
                                         <a href="setting.html">{user?.lastname} {user?.firstname}</a>
                                     </h5>
-                                    <span className="text-13 text-gray-500">{user?.type == 0 ? "Etudiant" : "Professeur"}</span>
+                                    <span className="text-13 text-gray-500">{user?.type === 0 ? "Etudiant" : "Professeur"}</span>
 
                                     <div 
                                             className="mt-20 text-gray-600 text-14 text-line-2" 
@@ -155,7 +155,7 @@ const Usersection = () => {
                                         />
 
                                     <div className="mentor-card__rating mt-20 border border-gray-100 px-8 py-6 rounded-8 flex justify-center items-center gap-10 flex-wrap">
-                                        {user?.type == 0 ? <button type="button" className="rounded-4 border btn btn-main py-4 px-10 text-sm" onClick={() => handleTurnProfessor(user?.id)}>
+                                        {user?.type === 0 ? <button type="button" className="rounded-4 border btn btn-main py-4 px-10 text-sm" onClick={() => handleTurnProfessor(user?.id)}>
                                             <i className="ph ph-user"></i> Rendre Professeur
                                         </button> :
                                         <button type="button" className="rounded-4 border btn btn-success py-4 px-10 text-sm" onClick={() => handleTurnStudent(user?.id)}>

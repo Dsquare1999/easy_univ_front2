@@ -267,7 +267,7 @@ const Classes = () => {
     }
     return ( 
         <>
-        {tabSelected=='Classe' && <section>
+        {tabSelected==='Classe' && <section>
             <div className="dashboard-body">
                 <div className="breadcrumb-with-buttons mb-24 flex-between flex-wrap gap-8">
                     <div className="breadcrumb mb-24">
@@ -368,14 +368,14 @@ const Classes = () => {
             </div>
         </section>}
         {
-            tabSelected=='Matiere' && selectedClasse!==undefined && (
+            tabSelected==='Matiere' && selectedClasse!==undefined && (
                 <>
                     <MatieresComponent classe={selectedClasse} teachers={teacherData} onRetour={handleRetourClick}/>
                 </>
             )
         }
         {
-            tabSelected=='Program' && classeData!== undefined && (
+            tabSelected==='Program' && classeData!== undefined && (
                 <>
                     <CalendarProgramsComponent classes={classeData} onRetour={handleProgramRetourClick} />
                 </>

@@ -224,7 +224,7 @@ const Students = () => {
 
 
     const handleRejet = async () => {
-        if(why == ""){
+        if(why === ""){
             toast.warning("La raison du refus de l'inscription est requise");
         }else{
             const values = {

@@ -658,7 +658,7 @@ const ProgramsComponent = ({
                     <div className="card-body p-16 flex justify-between">
                       <div>
                         <h5 className="text-main-600">{matiere?.name}
-                          {program.status == 'EN ATTENTE' && <>
+                          {program.status === 'EN ATTENTE' && <>
                             <i data-bs-toggle="modal"
                               data-bs-target="#programCreate" 
                               onClick={() => handleUpdate(program?.id)} 
@@ -687,10 +687,10 @@ const ProgramsComponent = ({
                           <strong className="mr-2">Statut : </strong>
                           <span
                             className={
-                              program?.status == "ANNULE" ||
-                              program?.status == "REPORTE"
+                              program?.status === "ANNULE" ||
+                              program?.status === "REPORTE"
                                 ? "text-danger"
-                                : program?.status == "EFFECTUE"
+                                : program?.status === "EFFECTUE"
                                 ? "text-emerald-600"
                                 : ""
                             }
@@ -700,11 +700,11 @@ const ProgramsComponent = ({
                         </div>
                       </div>
                     </div>
-                    {program?.status == "REPORTE" ||
-                    program?.status == "ANNULE" ||
-                    program?.status == "EFFECTUE" ? (
+                    {program?.status === "REPORTE" ||
+                    program?.status === "ANNULE" ||
+                    program?.status === "EFFECTUE" ? (
                       <div className="p-16">
-                        {program?.status == "ANNULE" && (
+                        {program?.status === "ANNULE" && (
                           <>
                             <div className="alert alert-danger">
                               Ce programme a été annulé
@@ -717,7 +717,7 @@ const ProgramsComponent = ({
                             </div>
                           </>
                         )}
-                        {program?.status == "REPORTE" && (
+                        {program?.status === "REPORTE" && (
                           <>
                             <div className="alert alert-warning">
                               Ce programme a été reporté
