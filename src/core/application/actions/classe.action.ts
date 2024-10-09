@@ -1,9 +1,10 @@
 "use client";
 
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { classeCreate, classeList, studentCreate, studentLeave, studentList, studentRefuse, studentValidate } from "@/core/infra/api";
+import { classeCreate, classeList, classeRetrieve, matiereCreate, matiereDelete, matiereList, matiereUpdate, studentCreate, studentLeave, studentList, studentRefuse, studentValidate } from "@/core/infra/api";
 import { z } from "zod";
-import { ClasseSchema, StudentRefusalSchema, StudentSchema, StudentValidationSchema } from "../schemas";
+import { ClasseSchema, MatiereSchema, StudentRefusalSchema, StudentSchema, StudentValidationSchema } from "../schemas";
+
 
 export const classeListAction = createAsyncThunk(
   "classe/list",
@@ -29,6 +30,25 @@ export const classeCreateAction = createAsyncThunk(
     await dispatch(classeCreate.initiate({filiere, cycle, year})).unwrap()
       .then((result)=> {
         console.log("Classe create results")
+        console.log(JSON.stringify(result))
+        classeResult = result
+      })
+      .catch((error)=> {
+        console.log(error)
+        classeResult = error
+      })
+
+      return classeResult;
+  }
+);
+
+export const classeRetrieveAction = createAsyncThunk(
+  "classe/retrieve",
+  async ({id} : {id: string}, { rejectWithValue, dispatch }) => {
+    let classeResult;
+    await dispatch(classeRetrieve.initiate({id})).unwrap()
+      .then((result)=> {
+        console.log("Classe retrieve successfully")
         console.log(JSON.stringify(result))
         classeResult = result
       })

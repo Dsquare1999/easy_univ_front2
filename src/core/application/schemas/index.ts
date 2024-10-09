@@ -3,3 +3,4 @@ export { FiliereSchema } from './filiere.schema';
 export { CycleSchema } from './cycle.schema';
 export { ClasseSchema, StudentSchema, StudentValidationSchema, StudentRefusalSchema } from './classe.schema';
 export { TagSchema } from './tag.schema';
+export { MatiereSchema, ProgramSchema, ReportProgramSchema, NoteSchema } from './matiere.schema'

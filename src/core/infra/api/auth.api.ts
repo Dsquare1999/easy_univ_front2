@@ -2,6 +2,7 @@ import { CoverSchema, DetailSchema, LoginSchema, RegistrationSchema } from "@/co
 import api from "./base.api";
 import * as z from "zod";
 import { UserState } from "@/core/domain/entities/user.entity";
+import { IdentiteEnum } from "@/core/domain/enums/user.enum";
 
 export const authApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -12,18 +13,19 @@ export const authApi = api.injectEndpoints({
 				body: { email, password },
 			}),
     }),
-    register: builder.mutation<any, {name: string, email: string, password: string}>({
-      query: ({ name, email, password } : z.infer<typeof RegistrationSchema>) => ({
+    register: builder.mutation<any, {firstname: string, lastname: string, email: string, password: string}>({
+      query: ({ firstname, lastname, email, password } : z.infer<typeof RegistrationSchema>) => ({
 				url: '/auth/register/',
 				method: 'POST',
-				body: { name, email, password },
+				body: { firstname, lastname, email, password },
 			}),
     }),
-    addDetails: builder.mutation<any, { name: string; email: string; phone: string; bio?: string; profile?: File }>({
-      query: ({ name, email, phone, bio, profile }) => {
+    addDetails: builder.mutation<any, { firstname: string; lastname: string; email: string; phone: string; bio?: string; profile?: File }>({
+      query: ({ firstname, lastname, email, phone, bio, profile }) => {
         const formData = new FormData();
         
-        formData.append('name', name);
+        formData.append('firstname', firstname);
+        formData.append('lastname', lastname);
         formData.append('email', email);
         formData.append('phone', phone);
         if (bio) formData.append('bio', bio);
@@ -47,7 +49,37 @@ export const authApi = api.injectEndpoints({
         };
       },
     }),
-    
+    userList: builder.query<any, void>({
+      query: () => ({
+          url: "/users",
+          method: "GET",
+      }),
+      providesTags: ['User'],
+
+    }),
+    turnProfessor: builder.mutation<any, { id: string }>({
+      query: ({ id }) => ({
+				url: `/users/turnProfessor`,
+				method: 'POST',
+        body: { id },
+			}),
+      invalidatesTags: ['User'],
+    }),
+    turnStudent: builder.mutation<any, { id: string }>({
+      query: ({ id }) => ({
+				url: `/users/turnStudent`,
+				method: 'POST',
+        body: { id },
+			}),
+      invalidatesTags: ['User'],
+    }),
+    deleteUser: builder.mutation<any, { id: string }>({
+      query: ({ id }) => ({
+				url: `/users/deleteUser/${id}`,
+				method: 'DELETE',
+			}),
+      invalidatesTags: ['User'],
+    }),
     logout: builder.mutation({
       query: () => ({
         url: "/auth/logout",

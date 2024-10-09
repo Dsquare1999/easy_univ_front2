@@ -3,7 +3,7 @@
 import { UserState } from "@/core/domain/entities/user.entity";
 import { RequestEnum } from "@/core/domain/enums/request.enum";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { addDetailsAction, login, registerAction, updateCoverAction } from "../actions/user.action";
+import { addDetailsAction, deleteUserAction, login, registerAction, turnProfessorAction, turnStudentAction, updateCoverAction, usersListAction } from "../actions/user.action";
 
 const initialState: UserState = {
   isLoggedIn: false,
@@ -56,6 +56,19 @@ const userSlice = createSlice({
     });
     builder.addCase(addDetailsAction.rejected, (state) => {
       state.status = RequestEnum.REJECTED;
+    });
+
+    builder.addCase(usersListAction.fulfilled, (state, action) => {
+      state.status = RequestEnum.FULFILLED;
+    });
+    builder.addCase(turnProfessorAction.fulfilled, (state, action) => {
+      state.status = RequestEnum.FULFILLED;
+    });
+    builder.addCase(turnStudentAction.fulfilled, (state, action) => {
+      state.status = RequestEnum.FULFILLED;
+    });
+    builder.addCase(deleteUserAction.fulfilled, (state, action) => {
+      state.status = RequestEnum.FULFILLED;
     });
   },
 });

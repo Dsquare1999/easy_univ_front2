@@ -1,7 +1,5 @@
 "use client"
 
-import { Button } from "@/components/ui/button";
-
 import DataTable from 'datatables.net-react';
 import DT from 'datatables.net-bs5';
 
@@ -12,26 +10,36 @@ import { CycleEntity } from "@/core/domain/entities/cycle.entity";
 import { useForm } from "react-hook-form";
 import { ClasseSchema } from "@/core/application/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { set, z } from "zod";
 import { toast } from "react-toastify";
 import { Form } from "@/components/ui/form";
 import { FiliereEntity } from "@/core/domain/entities/filiere.entity";
-import { ClasseEntity } from "@/core/domain/entities/classe.entity";
+import { ClasseEntity, MatiereEntity } from "@/core/domain/entities/classe.entity";
 import { classeCreateAction, classeListAction, studentCreateAction, studentLeaveAction } from "@/core/application/actions/classe.action";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import MatieresComponent from "@/components/classes/MatieresComponent";
+import { UserEntity } from '@/core/domain/entities/user.entity';
+import RelevesComponent from '@/components/classes/RelevesComponent';
+import { Calendar } from 'lucide-react';
+import CalendarProgramsComponent from '@/components/classes/CalendarProgramsComponent';
 
 DataTable.use(DT);
 
 const Classes = () => {
     const [isLoading, setIsLoading] = React.useState<boolean>(false);
-    const router = useRouter();
-    const { data: session, status } = useSession();
     const dispatch = useAppDispatch();
+    
+    const [tabSelected, setTabSelected] = useState<'Matiere' | 'Program' | 'Classe'>('Classe');
+    const [selectedClasse, setSelectedClasse] = useState<ClasseEntity | undefined>(undefined);
+    
     const [classeData, setClasseData] = useState<ClasseEntity[] | undefined>(undefined);
     const [filiereData, setFiliereData] = useState<FiliereEntity[] | undefined>(undefined);
     const [cycleData, setCycleData] = useState<CycleEntity[] | undefined>(undefined);
     const [myClassesData, setMyClassesData] = useState<string[] | undefined>(undefined);
+    const [teacherData, setTeacherData] = useState<UserEntity[] | undefined>(undefined);
+
+    const toggleAction = (tab:'Matiere' | 'Program' | 'Classe') => {
+        setTabSelected(tab);
+    }
 
     const tableRef = useRef<HTMLTableElement>(null);
 
@@ -40,14 +48,20 @@ const Classes = () => {
         { data: "cycle", title: "Cycle" },
         { data: "filiere", title: "Filière" },
         { data: "year", title: "Année" },
+        { data: "classe", visible: false },
         {
             title: "Actions",
             data: "registered",
             orderable: false,
             render: function (_data: any, _type: any, row: any) {
               return _data ? 
-                        `<button class="counter-inscription py-6 px-10 bg-success-50 text-success-600 d-inline-flex align-items-center rounded-pill" data-id="${row.id}">Déjà inscrit</button>`:
-                        `<button class="inscription border btn-main rounded-pill py-6 px-10 text-white" data-id="${row.id}">S'inscrire</button>`;
+                        `<button class="open-matieres btn btn-main rounded-4 py-4 px-10 text-sm">Matières</button> `+
+                        `<button class="open-teachers btn bg-emerald-600 hover:bg-emerald-800 active:bg-emerald-800 rounded-4 py-4 px-10 text-sm">Enseignants</button> `+
+                        `<button class="open-students btn btn-warning rounded-4 py-4 px-10 text-sm">Etudiants</button> `+
+                        `<button class="open-programs btn bg-gray-400 hover:bg-gray-600 active:bg-gray-600 rounded-4 py-4 px-10 text-sm">Programmes</button> `+
+                        `<button class="counter-inscription btn btn-danger rounded-4 py-4 px-10 text-sm mr-2" data-id="${row.id}">Sortir</button>`
+                        :
+                        `<button class="inscription border btn btn-main rounded-pill py-6 px-10 text-sm" data-id="${row.id}">S'inscrire</button>`;
 
             }
         }
@@ -85,6 +99,20 @@ const Classes = () => {
                 });
             });
 
+            $(tableRef.current).on('click', '.open-programs', function () {
+                const rowData = datatable.row($(this).parents('tr')).data();
+                
+                setSelectedClasse(rowData.classe)
+                setTabSelected('Program')
+            });
+
+            $(tableRef.current).on('click', '.open-matieres', function () {
+                const rowData = datatable.row($(this).parents('tr')).data();
+                
+                setSelectedClasse(rowData.classe)
+                toggleAction('Matiere')
+            });
+
             $(tableRef.current).on('click', '.counter-inscription', function () {
                 const rowId = $(this).data('id');
                 const rowData = datatable.row($(this).parents('tr')).data();
@@ -112,21 +140,26 @@ const Classes = () => {
         return () => {
             if (tableRef.current) {
                 $(tableRef.current).off('click', '.inscription');
+                $(tableRef.current).off('click', '.open-matieres');
+                $(tableRef.current).off('click', '.open-programs');
                 $(tableRef.current).off('click', '.counter-inscription');
                 $(tableRef.current).DataTable().destroy();
             }
         };
-    }, []);
+    }, [classeData]);
 
     useEffect(() => {
         dispatch(classeListAction())
           .unwrap()
           .then((classes) => {
             console.log(classes)
+
             setMyClassesData(classes.my_classes?.map((instance : any) => instance.classe))
             setFiliereData(classes.filieres);   
             setCycleData(classes.cycles);
             setClasseData(classes.data);
+            setTeacherData(classes.teachers);
+
           })
           .catch((error) => {
             console.error("Failed to fetch classes: ", error.message || error);
@@ -144,6 +177,7 @@ const Classes = () => {
                 filiere: classe.filiere ? classe.filiere.name : '',
                 cycle: classe.cycle ? classe.cycle.name : '',
                 year: classe.year,
+                classe: classe,
                 registered : classe.id ? myClassesData?.includes(classe.id) ?? undefined : false
             }));
 
@@ -209,8 +243,31 @@ const Classes = () => {
   
     };
 
+    const handleRetourClick = (updatedMatieres: MatiereEntity[]) => {
+        setTabSelected('Classe')
+        setClasseData((prevData) => {
+            if(prevData){
+                return prevData.map(classe => {
+                    if(classe.id === selectedClasse?.id){
+                        return {
+                            ...classe,
+                            matieres: updatedMatieres
+                        }
+                    }
+                    return classe
+                })
+            }
+            return prevData
+        })
+    };
+
+    const handleProgramRetourClick = (classeData: ClasseEntity[]) => {
+        setTabSelected('Classe')
+        setClasseData(classeData)
+    }
     return ( 
-        <section>
+        <>
+        {tabSelected=='Classe' && <section>
             <div className="dashboard-body">
                 <div className="breadcrumb-with-buttons mb-24 flex-between flex-wrap gap-8">
                     <div className="breadcrumb mb-24">
@@ -220,9 +277,13 @@ const Classes = () => {
                             <li><span className="text-main-600 fw-normal text-15">Classes</span></li>
                         </ul>
                     </div>
-                    <button type="button" className="border btn-main rounded-pill py-8 px-20" data-bs-toggle="modal" data-bs-target="#cycleCreate">
-                        <i className="ph ph-caret-plus"></i> Ajouter Classe
-                    </button>
+                    
+                    <div className="flex gap-1"> 
+
+                        <button type="button" className="border btn-main rounded-pill py-8 px-20" data-bs-toggle="modal" data-bs-target="#cycleCreate">
+                            <i className="ph ph-caret-plus"></i> Ajouter Classe
+                        </button>
+                    </div>
                     
                     <div className="modal fade" id="cycleCreate" tabIndex={-1} aria-hidden="true">
                         <div className="modal-dialog">
@@ -300,14 +361,28 @@ const Classes = () => {
                 </div>
 
                 <div className="card overflow-hidden">
-
-                
                     <div className="card-body p-0">
                         <table ref={tableRef} id="assignmentTable" className="table table-striped"></table>
                     </div>
                 </div>
             </div>
-        </section>
+        </section>}
+        {
+            tabSelected=='Matiere' && selectedClasse!==undefined && (
+                <>
+                    <MatieresComponent classe={selectedClasse} teachers={teacherData} onRetour={handleRetourClick}/>
+                </>
+            )
+        }
+        {
+            tabSelected=='Program' && classeData!== undefined && (
+                <>
+                    <CalendarProgramsComponent classes={classeData} onRetour={handleProgramRetourClick} />
+                </>
+            )
+        }
+        </>
+
      );
 }
  

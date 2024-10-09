@@ -9,6 +9,7 @@ import React from "react";
 import { signIn } from "next-auth/react";
 import { Form } from "@/components/ui/form";
 import { redirect, useRouter } from "next/navigation";
+import Link from "next/link";
 
 interface LoginProps {}
 
@@ -157,12 +158,10 @@ const Login: React.FunctionComponent<LoginProps> = () => {
 
               <p className="mt-32 text-gray-600 text-center">
                 Vous n'avez pas encore de compte ?{" "}
-                <a
-                  href="sign-in.html"
-                  className="text-main-600 hover-text-decoration-underline"
-                >
+                
+                <Link href="/auth/signup" className="text-main-600 hover-text-decoration-underline">
                   Inscrivez-vous !
-                </a>
+                </Link>
               </p>
 
               <div className="divider my-32 position-relative text-center">

@@ -11,6 +11,7 @@ import { registerAction } from "@/core/application/actions/user.action";
 import { useAppDispatch } from "@/core/application/hooks";
 import { useRegisterMutation } from "@/core/infra/api";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 interface RegisterProps {}
 
@@ -21,7 +22,8 @@ const Register: React.FunctionComponent<RegisterProps> = () => {
   const form = useForm<z.infer<typeof RegistrationSchema>>({
     resolver: zodResolver(RegistrationSchema),
     defaultValues: {
-      name: "",
+      firstname: "",
+      lastname: "",
       email: "",
       password: "",
     },
@@ -89,22 +91,42 @@ const Register: React.FunctionComponent<RegisterProps> = () => {
 
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
-              <div className="mb-24">
-                <label htmlFor="username" className="form-label mb-8 h6">
-                  Nom et Prénoms
-                </label>
-                <div className="position-relative">
-                  <input
-                    type="text"
-                    className="form-control py-11 ps-40"
-                    id="name"
-                    placeholder="John Doe"
-                    {...form.register("name")}
-                  />
-                  <span className="position-absolute top-50 translate-middle-y ms-16 text-gray-600 d-flex">
-                    <i className="ph ph-user"></i>
-                  </span>
+              <div className="mb-24 flex gap-10">
+                <div>
+                  <label htmlFor="lastname" className="form-label mb-8 h6">
+                    Nom
+                  </label>
+                  <div className="position-relative">
+                    <input
+                      type="text"
+                      className="form-control py-11 ps-40"
+                      id="lastname"
+                      placeholder="Doe"
+                      {...form.register("lastname")}
+                    />
+                    <span className="position-absolute top-50 translate-middle-y ms-16 text-gray-600 d-flex">
+                      <i className="ph ph-user"></i>
+                    </span>
+                  </div>
                 </div>
+                <div>
+                  <label htmlFor="firstname" className="form-label mb-8 h6">
+                    Prénom(s)
+                  </label>
+                  <div className="position-relative">
+                    <input
+                      type="text"
+                      className="form-control py-11 ps-40"
+                      id="firstname"
+                      placeholder="John Franck"
+                      {...form.register("firstname")}
+                    />
+                    <span className="position-absolute top-50 translate-middle-y ms-16 text-gray-600 d-flex">
+                      <i className="ph ph-user"></i>
+                    </span>
+                  </div>
+                </div>
+                
               </div>
               <div className="mb-24">
                 <label htmlFor="email" className="form-label mb-8 h6">
@@ -152,13 +174,10 @@ const Register: React.FunctionComponent<RegisterProps> = () => {
               </button>
               <p className="mt-32 text-gray-600 text-center">
                 Vous avez déjà un compte ?
-                <a
-                  href="sign-in.html"
-                  className="text-main-600 hover-text-decoration-underline"
-                >
-                  {" "}
+                
+                <Link href="/auth/signin" className="text-main-600 hover-text-decoration-underline">
                   Connectez-vous
-                </a>
+                </Link>
               </p>
             </form>
           </Form>

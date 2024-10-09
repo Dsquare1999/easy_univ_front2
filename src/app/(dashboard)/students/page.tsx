@@ -116,7 +116,7 @@ const Students = () => {
                 console.log("studentData", studentData)
                 const filteredData = studentData?.map(student => ({
                     id: student.id ? student.id : '',
-                    name: student.user.name ? student.user.name : '',
+                    name: student.user.firstname ? student.user.firstname+' '+student.user.lastname : '',
                     filiere: student.classe.filiere ? student.classe.filiere.name : '',
                     cycle: student.classe.cycle ? student.classe.cycle.name : '',
                     title: student.titre? student.titre : 'Non défini',
@@ -306,7 +306,7 @@ const Students = () => {
                                             </a>
                                         </div>
                                         <h5 className="mb-0">
-                                            <a href="setting.html">{selectedStudent?.user.name}</a>
+                                            <a href="setting.html">{selectedStudent?.user.lastname} {selectedStudent?.user.firstname}</a>
                                         </h5>
                                         <span className="text-13 text-gray-500">Etudiante</span>
 
@@ -319,7 +319,7 @@ const Students = () => {
                                             <h5 className="text-left mb-10 text-main-600">Utilisateur</h5>
                                             <div className="w-full flex flex-wrap justify-between items-center">
                                                 <strong>Nom Complet : </strong>
-                                                <span>{selectedStudent?.user.name}</span>
+                                                <span>{selectedStudent?.user.lastname} {selectedStudent?.user.firstname}</span>
                                             </div>
                                             <div className="w-full flex flex-wrap justify-between items-center">
                                                 <strong>Téléphone : </strong>

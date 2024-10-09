@@ -1,7 +1,8 @@
 import { RequestState } from "./request.entity";
 
 export interface UserEntity {
-    name : string;
+    firstname : string;
+    lastname : string;
     email : string;
     phone : string;
     profile : string;
@@ -10,6 +11,7 @@ export interface UserEntity {
     updated_at : string;
     id : string;
     bio : string;
+    type: number;
 }
 
 export interface UserState {

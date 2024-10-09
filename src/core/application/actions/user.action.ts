@@ -1,7 +1,7 @@
 "use client";
 
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { addDetails, updateCover, useLoginMutation, useRegisterMutation } from "@/core/infra/api";
+import { addDetails, deleteUser, turnProfessor, turnStudent, updateCover, useLoginMutation, useRegisterMutation, userList } from "@/core/infra/api";
 import axios from "axios";
 import { CoverSchema, DetailSchema, RegistrationSchema } from "../schemas";
 import { z } from "zod";
@@ -43,9 +43,9 @@ export const login = createAsyncThunk(
 
 export const registerAction = createAsyncThunk(
   "user/register",
-  async ({name, email, password} : z.infer<typeof RegistrationSchema>, {rejectWithValue, dispatch}) => {
+  async ({firstname, lastname, email, password} : z.infer<typeof RegistrationSchema>, {rejectWithValue, dispatch}) => {
     let registerResult;
-      await dispatch(register.initiate({name, email, password})).unwrap()
+      await dispatch(register.initiate({firstname, lastname, email, password})).unwrap()
         .then((result)=> {
           console.log(result)
           registerResult = result
@@ -61,9 +61,9 @@ export const registerAction = createAsyncThunk(
 
 export const addDetailsAction = createAsyncThunk(
   "user/details",
-  async ({name, email, phone, bio, profile} : z.infer<typeof DetailSchema>, {rejectWithValue, dispatch}) => {
+  async ({firstname, lastname, email, phone, bio, profile} : z.infer<typeof DetailSchema>, {rejectWithValue, dispatch}) => {
     let detailsResult;
-      await dispatch(addDetails.initiate({name, email, phone, bio, profile})).unwrap()
+      await dispatch(addDetails.initiate({firstname, lastname, email, phone, bio, profile})).unwrap()
         .then((result : any)=> {
           console.log(result)
           detailsResult = result
@@ -92,5 +92,79 @@ export const updateCoverAction = createAsyncThunk(
       })
 
       return coverResult;
+  }
+);
+
+export const usersListAction = createAsyncThunk(
+  "user/list",
+  async (_, { rejectWithValue, dispatch }) => {
+
+    try {
+      const result = await dispatch(userList.initiate(
+        undefined,{
+          forceRefetch: true, 
+        }
+      )).unwrap();
+      if (result.error) {
+        throw result.error;
+      }
+      return result.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
+export const turnProfessorAction = createAsyncThunk
+(
+  "user/turnProfessor", async ({ id } : { id: string} , {dispatch}) => {
+    let turnResult;
+    await dispatch(turnProfessor.initiate({id})).unwrap()
+      .then((result)=> {
+        console.log(result)
+        turnResult = result
+      })
+      .catch((error)=> {
+        console.log(error)
+        turnResult = error
+      })
+
+      return turnResult;
+  }
+);
+
+export const turnStudentAction = createAsyncThunk
+(
+  "user/turnStudent", async ({ id }: { id: string } , {dispatch}) => {
+    let turnResult;
+    await dispatch(turnStudent.initiate({id})).unwrap()
+      .then((result)=> {
+        console.log(result)
+        turnResult = result
+      })
+      .catch((error)=> {
+        console.log(error)
+        turnResult = error
+      })
+
+      return turnResult;
+  }
+);
+
+export const deleteUserAction = createAsyncThunk
+(
+  "user/deleteUser", async ({ id }: { id: string } , {dispatch}) => {
+    let deleteUserResult;
+    await dispatch(deleteUser.initiate({id})).unwrap()
+      .then((result)=> {
+        console.log(result)
+        deleteUserResult = result
+      })
+      .catch((error)=> {
+        console.log(error)
+        deleteUserResult = error
+      })
+
+      return deleteUserResult;
   }
 );

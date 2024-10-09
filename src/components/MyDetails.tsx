@@ -68,7 +68,8 @@ const MyDetails = () => {
 
   useEffect(() => {
     if(session?.user?.phone) setValue("phone", session?.user?.phone as string)
-    if(session?.user?.name) setValue("name", session?.user?.name as string)
+    if(session?.user?.firstname) setValue("firstname", session?.user?.firstname as string)
+    if(session?.user?.lastname) setValue("lastname", session?.user?.lastname as string)
     if(session?.user?.email) setValue("email", session?.user?.email as string)
     if(session?.user?.bio) setBio(session?.user?.bio as string)
 
@@ -82,10 +83,7 @@ const MyDetails = () => {
 
 
   const onSubmit = async (values: FormData) => {
-    console.log("Form Data:", values);
     values.bio = bio;
-    console.log("Form Data:", values);
-
     setIsLoading(true)
     await dispatch(addDetailsAction(values))
         .unwrap()
@@ -133,17 +131,30 @@ const MyDetails = () => {
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="row gy-4">
             <div className="col-sm-6 col-xs-6">
-              <label htmlFor="fname" className="form-label mb-8 h6">
-                Nom et Prénoms
+              <label htmlFor="lastname" className="form-label mb-8 h6">
+                Nom
               </label>
               <input
                 type="text"
                 className="form-control py-11"
-                id="fname"
+                id="lastname"
                 placeholder="Enter First Name"
-                {...register("name")}
+                {...register("lastname")}
               />
-              {errors.name && <p className="text-danger">{errors.name.message}</p>}
+              {errors.lastname && <p className="text-danger">{errors.lastname.message}</p>}
+            </div>
+            <div className="col-sm-6 col-xs-6">
+              <label htmlFor="fname" className="form-label mb-8 h6">
+                Prénoms
+              </label>
+              <input
+                type="text"
+                className="form-control py-11"
+                id="firstname"
+                placeholder="Enter First Name"
+                {...register("firstname")}
+              />
+              {errors.firstname && <p className="text-danger">{errors.firstname.message}</p>}
             </div>
             <div className="col-sm-6 col-xs-6">
               <label htmlFor="email" className="form-label mb-8 h6">

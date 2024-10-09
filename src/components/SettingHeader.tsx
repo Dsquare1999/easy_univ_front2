@@ -15,7 +15,8 @@ const SettingHeader = () => {
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [coverImage, setCoverImage] = useState<File | null>(null);
-    const [name, setName] = useState<string>("");
+    const [firstname, setFirstname] = useState<string>("");
+    const [lastname, setLastname] = useState<string>("");
     const [join, setJoin] = useState<string | undefined>(session?.user?.created_at);
     const [previewImage, setPreviewImage] = useState<string>(
       session?.user?.cover ? `${process.env.NEXT_PUBLIC_HOST}/storage/${session?.user?.cover}` : "/assets/images/setting_cover_img.png"
@@ -91,7 +92,8 @@ const SettingHeader = () => {
               `${process.env.NEXT_PUBLIC_HOST}/storage/${session?.user?.profile}` || "/assets/images/user_placeholder.jpg"
             )
         }
-        if(session?.user?.name) setName(session?.user?.name as string)
+        if(session?.user?.firstname) setFirstname(session?.user?.firstname as string)
+          if(session?.user?.lastname) setLastname(session?.user?.lastname as string)
 
         if(session?.user?.created_at){
             setJoin(formatJoinDate(session?.user?.created_at))
@@ -142,7 +144,7 @@ const SettingHeader = () => {
               className="w-120 h-120 rounded-circle border border-white"
             />
             <div>
-              <h4 className="mb-8">{name}</h4>
+              <h4 className="mb-8">{lastname} {firstname}</h4>
               <div className="setting-profile__infos flex-align flex-wrap gap-16">
                 <div className="flex-align gap-6">
                   <span className="text-gray-600 d-flex text-lg">

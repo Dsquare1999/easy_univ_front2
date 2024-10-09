@@ -900,6 +900,10 @@ label[for="dt-length-1"]{
     align-items: center;
     justify-content: center;
 }
+
+.fc-button{
+    height: auto;
+}
 /* ==================== Data Tables Css End ========================== */
 /* Full Calendar Customize Css Start */
 .fc-border-separate tr.fc-last th {

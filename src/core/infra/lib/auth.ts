@@ -17,6 +17,8 @@ interface BackendLoginResponse {
 
 // Extend the NextAuth User type to include additional fields
 interface ExtendedUser extends User {
+    firstname?: string;
+    lastname?: string;
     phone?: string;
     bio?: string;
     profile?: string;

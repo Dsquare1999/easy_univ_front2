@@ -1,6 +1,6 @@
 import api from "./base.api";
 import * as z from "zod";
-import { ClasseSchema, StudentRefusalSchema, StudentSchema, StudentValidationSchema } from "@/core/application/schemas";
+import { ClasseSchema, MatiereSchema, StudentRefusalSchema, StudentSchema, StudentValidationSchema } from "@/core/application/schemas";
 
 export const classeApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -15,6 +15,12 @@ export const classeApi = api.injectEndpoints({
                 url: '/classes/store',
                 method: 'POST',
                 body: { filiere, cycle, year },
+            }),
+        }),
+        classeRetrieve: builder.query<any, {id: string}>({
+            query: ({ id } : {id: string}) => ({
+                url: `/classes/show/${id}`,
+                method: 'GET',
             }),
         }),
         studentList: builder.query<any, void>({
@@ -49,8 +55,7 @@ export const classeApi = api.injectEndpoints({
                 method: 'POST',
                 body: { why, student },
             }),
-        }),
-        
+        })
 
     }),
   overrideExisting: true,

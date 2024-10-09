@@ -1,10 +1,14 @@
 "use client"
+import { signOut } from "next-auth/react";
 import Image from "next/image";
-import { useEffect } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const Sidebar = () => {
+    const router = useRouter();
 
     return ( 
+        <>
         <aside className="sidebar">
             <button type="button" className="sidebar-close-btn text-gray-500 hover-text-white hover-bg-main-600 text-md w-24 h-24 border border-gray-100 hover-border-main-600 d-xl-none d-flex flex-center rounded-circle position-absolute"><i className="ph ph-x"></i></button>
             
@@ -21,173 +25,122 @@ const Sidebar = () => {
                 <div className="p-20 pt-10">
                     <ul className="sidebar-menu">
                         <li className="sidebar-menu__item">
-                            <a href="students.html" className="sidebar-menu__link">
+                            <Link href="/dashboard" className="sidebar-menu__link">
                                 <span className="icon"><i className="ph ph-squares-four"></i></span>
                                 <span className="text">Dashboard</span>
-                            </a>
+                            </Link>
                         </li>
-                        <li className="sidebar-menu__item has-dropdown">
-                            <a href="javascript:void(0)" className="sidebar-menu__link">
+                        <li className="sidebar-menu__item">
+                            <Link href="/cycles" className="sidebar-menu__link">
                                 <span className="icon"><i className="ph ph-squares-four"></i></span>
-                                <span className="text">Administrer</span>
-                                <span className="link-badge">3</span>
-                            </a>
-                            <ul className="sidebar-submenu">
-                                <li className="sidebar-submenu__item">
-                                    <a href="index.html" className="sidebar-submenu__link"> Cycle - Filière </a>
-                                </li>
-                                <li className="sidebar-submenu__item">
-                                    <a href="index-2.html" className="sidebar-submenu__link"> Classes </a>
-                                </li>
-                                <li className="sidebar-submenu__item">
-                                    <a href="index-3.html" className="sidebar-submenu__link"> Tag </a>
-                                </li>
-                            </ul>
+                                <span className="text">Cycles</span>
+                            </Link>
                         </li>
-                        <li className="sidebar-menu__item has-dropdown">
-                            <a href="javascript:void(0)" className="sidebar-menu__link">
+                        <li className="sidebar-menu__item">
+                            <Link href="/filieres" className="sidebar-menu__link">
                                 <span className="icon"><i className="ph ph-squares-four"></i></span>
-                                <span className="text">Dashboard</span>
-                                <span className="link-badge">3</span>
-                            </a>
-                            <ul className="sidebar-submenu">
-                                <li className="sidebar-submenu__item">
-                                    <a href="index.html" className="sidebar-submenu__link"> Dashboard One </a>
-                                </li>
-                                <li className="sidebar-submenu__item">
-                                    <a href="index-2.html" className="sidebar-submenu__link"> Dashboard Two </a>
-                                </li>
-                                <li className="sidebar-submenu__item">
-                                    <a href="index-3.html" className="sidebar-submenu__link"> Dashboard Three </a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li className="sidebar-menu__item has-dropdown">
-                            <a href="javascript:void(0)" className="sidebar-menu__link">
-                                <span className="icon"><i className="ph ph-graduation-cap"></i></span>
-                                <span className="text">Courses</span>
-                            </a>
-                            <ul className="sidebar-submenu">
-                                <li className="sidebar-submenu__item">
-                                    <a href="student-courses.html" className="sidebar-submenu__link"> Student Courses </a>
-                                </li>
-                                <li className="sidebar-submenu__item">
-                                    <a href="mentor-courses.html" className="sidebar-submenu__link"> Mentor Courses </a>
-                                </li>
-                                <li className="sidebar-submenu__item">
-                                    <a href="create-course.html" className="sidebar-submenu__link"> Create Course </a>
-                                </li>
-                            </ul>
+                                <span className="text">Filières</span>
+                            </Link>
                         </li>
                         <li className="sidebar-menu__item">
-                            <a href="students.html" className="sidebar-menu__link">
-                                <span className="icon"><i className="ph ph-users-three"></i></span>
-                                <span className="text">Students</span>
-                            </a>
+                            <Link href="/filieres" className="sidebar-menu__link">
+                                <span className="icon"><i className="ph ph-squares-four"></i></span>
+                                <span className="text">Unité Enseignement</span>
+                            </Link>
                         </li>
                         <li className="sidebar-menu__item">
-                            <a href="assignment.html" className="sidebar-menu__link">
-                                <span className="icon"><i className="ph ph-clipboard-text"></i></span>
-                                <span className="text">Assignments</span>
-                            </a>
+                            <Link href="/classes" className="sidebar-menu__link">
+                                <span className="icon"><i className="ph ph-squares-four"></i></span>
+                                <span className="text">Classes</span>
+                            </Link>
                         </li>
                         <li className="sidebar-menu__item">
-                            <a href="mentors.html" className="sidebar-menu__link">
-                                <span className="icon"><i className="ph ph-users"></i></span>
-                                <span className="text">Mentors</span>
-                            </a>
+                            <Link href="/tags" className="sidebar-menu__link">
+                                <span className="icon"><i className="ph ph-squares-four"></i></span>
+                                <span className="text">Tags</span>
+                            </Link>
                         </li>
                         <li className="sidebar-menu__item">
-                            <a href="resources.html" className="sidebar-menu__link">
-                                <span className="icon"><i className="ph ph-bookmarks"></i></span>
-                                <span className="text">Resources</span>
-                            </a>
+                            <span className="text-gray-300 text-sm px-20 pt-20 fw-semibold border-top border-gray-100 d-block text-uppercase">Utilisateurs</span>
                         </li>
                         <li className="sidebar-menu__item">
-                            <a href="message.html" className="sidebar-menu__link">
-                                <span className="icon"><i className="ph ph-chats-teardrop"></i></span>
-                                <span className="text">Messages</span>
-                            </a>
+                            <Link href="/users" className="sidebar-menu__link">
+                                <span className="icon"><i className="ph ph-gear"></i></span>
+                                <span className="text">Tous les Utilisateurs</span>
+                            </Link>
                         </li>
                         <li className="sidebar-menu__item">
-                            <a href="analytics.html" className="sidebar-menu__link">
-                                <span className="icon"><i className="ph ph-chart-bar"></i></span>
-                                <span className="text">Analytics</span>
-                            </a>
-                        </li>
-                        <li className="sidebar-menu__item">
-                            <a href="event.html" className="sidebar-menu__link">
-                                <span className="icon"><i className="ph ph-calendar-dots"></i></span>
-                                <span className="text">Events</span>
-                            </a>
-                        </li>
-                        <li className="sidebar-menu__item">
-                            <a href="library.html" className="sidebar-menu__link">
-                                <span className="icon"><i className="ph ph-books"></i></span>
-                                <span className="text">Library</span>
-                            </a>
-                        </li>
-                        <li className="sidebar-menu__item">
-                            <a href="pricing-plan.html" className="sidebar-menu__link">
-                                <span className="icon"><i className="ph ph-coins"></i></span>
-                                <span className="text">Pricing</span>
-                            </a>
+                            <Link href="/students" className="sidebar-menu__link">
+                                <span className="icon"><i className="ph ph-gear"></i></span>
+                                <span className="text">Etudiants</span>
+                            </Link>
                         </li>
                         
                         <li className="sidebar-menu__item">
-                            <span className="text-gray-300 text-sm px-20 pt-20 fw-semibold border-top border-gray-100 d-block text-uppercase">Settings</span>
+                            <span className="text-gray-300 text-sm px-20 pt-20 fw-semibold border-top border-gray-100 d-block text-uppercase">Réglages</span>
                         </li>
                         <li className="sidebar-menu__item">
-                            <a href="setting.html" className="sidebar-menu__link">
+                            <Link href="/settings" className="sidebar-menu__link">
                                 <span className="icon"><i className="ph ph-gear"></i></span>
-                                <span className="text">Account Settings</span>
-                            </a>
+                                <span className="text">Paramètres</span>
+                            </Link>
+                        </li>
+                        <li className="sidebar-menu__item">
+                            <button data-bs-toggle="modal" data-bs-target="#confirmSignout" className="sidebar-menu__link">
+                                <span className="icon"><i className="ph ph-gear"></i></span>
+                                <span className="text">Déconnexion</span>
+                            </button>
                         </li>
 
-                        <li className="sidebar-menu__item has-dropdown">
-                            <a href="javascript:void(0)" className="sidebar-menu__link">
-                                <span className="icon"><i className="ph ph-shield-check"></i></span>
-                                <span className="text">Authetication</span>
-                            </a>
-                            <ul className="sidebar-submenu">
-                                <li className="sidebar-submenu__item">
-                                    <a href="sign-in.html" className="sidebar-submenu__link">Sign In</a>
-                                </li>
-                                <li className="sidebar-submenu__item">
-                                    <a href="sign-up.html" className="sidebar-submenu__link">Sign Up</a>
-                                </li>
-                                <li className="sidebar-submenu__item">
-                                    <a href="forgot-password.html" className="sidebar-submenu__link">Forgot Password</a>
-                                </li>
-                                <li className="sidebar-submenu__item">
-                                    <a href="reset-password.html" className="sidebar-submenu__link">Reset Password</a>
-                                </li>
-                                <li className="sidebar-submenu__item">
-                                    <a href="verify-email.html" className="sidebar-submenu__link">Verify Email</a>
-                                </li>
-                                <li className="sidebar-submenu__item">
-                                    <a href="two-step-verification.html" className="sidebar-submenu__link">Two Step Verification</a>
-                                </li>
-                            </ul>
-                        </li>
-                        
                     </ul>
-                </div>
-                <div className="p-20 pt-80">
-                    <div className="bg-main-50 p-20 pt-0 rounded-16 text-center mt-74">
-                        <span className="border border-5 bg-white mx-auto border-primary-50 w-114 h-114 rounded-circle flex-center text-success-600 text-2xl translate-n74">
-                            <img src="assets/images/icons/certificate.png" alt="" className="centerised-img"/>
-                        </span>
-                        <div className="mt-n74">
-                            <h5 className="mb-4 mt-22">Get Pro Certificate</h5>
-                            <p className="">Explore 400+ courses with lifetime members</p>
-                            <a href="pricing-plan.html" className="btn btn-main mt-16 rounded-pill">Get Access</a>
-                        </div>
-                    </div>
                 </div>
             </div>
 
-        </aside>   
+        </aside>  
+                    <div
+                    className="modal fade"
+                    id="confirmSignout"
+                    tabIndex={-1}
+                    aria-labelledby="confirmSignoutLabel"
+                    aria-hidden="true"
+                    >
+                    <div className="modal-dialog modal-lg modal-dialog modal-dialog-centered">
+                        <div className="modal-content radius-16 bg-base">
+                            <div className="modal-header py-16 px-24 border border-top-0 border-start-0 border-end-0">
+                                <h1 className="modal-title fs-5" id="confirmSignoutLabel">
+                                    Voulez-vous vraiment vous déconnecter ?
+                                </h1>
+                                <button
+                                type="button"
+                                className="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Close"
+                                ></button>
+                            </div>
+                            <div className="modal-body p-24 text-gray-800">
+                                <div className="d-flex align-items-center justify-content-center gap-8 mt-24">
+                                    <button
+                                        type="reset"
+                                        className="btn bg-danger-600 hover-bg-danger-800 border-danger-600 hover-border-danger-800 text-md px-24 py-12 radius-8"
+                                        data-bs-dismiss="modal"
+                                    >
+                                        Annuler
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="btn bg-main-600 hover-bg-main-800 border-main-600 hover-border-main-800 text-md px-24 py-12 radius-8"
+                                        onClick={() => signOut()}
+                                    >
+                                        Oui, je me déconnecte
+                                    </button>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                </div> 
+
+        </>
+        
      );
 }
  

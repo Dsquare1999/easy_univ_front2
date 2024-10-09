@@ -10,8 +10,11 @@ export const LoginSchema = z.object({
 });
 
 export const RegistrationSchema = z.object({
-  name: z.string().min(3, {
-    message: "Le nom complet doit être d'au moins 3 caractères",
+  firstname: z.string().min(3, {
+    message: "Le prénom doit être d'au moins 3 caractères",
+  }),
+  lastname: z.string().min(3, {
+    message: "Le nom doit être d'au moins 3 caractères",
   }),
   email: z.string().email({
     message: "L'email est requis",
@@ -22,7 +25,8 @@ export const RegistrationSchema = z.object({
 });
 
 export const DetailSchema = z.object({
-  name: z.string().min(1, { message: "Nom et Prénoms sont requis" }),
+  firstname: z.string().min(1, { message: "Le Prénom est requis" }),
+  lastname: z.string().min(1, { message: "Le Nom est requis" }),
   email: z.string().email({ message: "Email invalide" }),
   phone: z.string().min(8, { message: "Numéro de téléphone invalide" }),
   bio: z.string().optional(),
