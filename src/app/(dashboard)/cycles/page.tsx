@@ -1,12 +1,7 @@
-"use client"
+'use client'
 
-import { Button } from "@/components/ui/button";
-
-import DataTable from 'datatables.net-react';
-import DT from 'datatables.net-bs5';
-
-import $, { data } from "jquery";
-import React, { useEffect, useRef, useState } from "react";
+import $ from "jquery";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useAppDispatch } from "@/core/application/hooks";
 import { cycleCreateAction, cycleListAction } from "@/core/application/actions/cycle.action";
 import { CycleEntity } from "@/core/domain/entities/cycle.entity";
@@ -17,21 +12,23 @@ import { z } from "zod";
 import { toast } from "react-toastify";
 import { Form } from "@/components/ui/form";
 
-DataTable.use(DT);
-
 const Cycles = () => {
-    const [isLoading, setIsLoading] = React.useState<boolean>(false);
+    require('datatables.net-bs5');
+
     const dispatch = useAppDispatch();
+    const [isLoading, setIsLoading] = React.useState<boolean>(false);
     const [cycleData, setCycleData] = useState<CycleEntity[] | undefined>(undefined);
 
     const tableRef = useRef<HTMLTableElement>(null);
 
-    const cycleColumns = [
-        { data: "name", title: "Nom" },
-        { data: "description", title: "Description" },
-        { data: "duration", title: "Durée" },
-    ];
-
+    const cycleColumns = useMemo(() => {
+        return [
+            { data: "name", title: "Nom" },
+            { data: "description", title: "Description" },
+            { data: "duration", title: "Durée" },
+        ];
+    }, []);
+    
     useEffect(() => {
         if (tableRef.current) {      
             $(tableRef.current).DataTable({
@@ -207,7 +204,10 @@ const Cycles = () => {
 
                 <div className="card overflow-hidden">
                     <div className="card-body p-0">
-                        <table ref={tableRef} id="assignmentTable" className="table table-striped">
+                        <table 
+                            ref={tableRef} 
+                            id="assignmentTable" 
+                            className="table table-striped">
                         <thead>
                             <tr>                        
                                 {

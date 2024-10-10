@@ -1,10 +1,11 @@
 (function ($) {
+
   "use strict";
   
   // ==========================================
   //      Start Document Ready function
   // ==========================================
-  $(document).ready(function () {
+  jQuery(function () {
     
     
   // =========================== Dropdown menu Js Start =======================
@@ -55,8 +56,11 @@
       selector.find("li").eq(0).addClass("activePage");
     }
   }
-  if ($('ul').length) {
-    dynamicActiveMenuClass($('ul'));
+  if (typeof window !== 'undefined') {
+    // S'assurer que l'on est côté client
+    if ($('ul').length) {
+      dynamicActiveMenuClass($('ul'));
+    }
   }
   // ========================== add active class to ul>li top Active current page Js End =====================
   
@@ -87,9 +91,9 @@
   // =========================== Tooltip Js End ===============================
 
   // ============================= Image Upload Js Start ==============================
-  $(function(){ 
-    $("#fileUpload").fileUpload();
-  });
+  // $(function(){ 
+  //   $("#fileUpload").fileUpload();
+  // });
   // ============================= Image Upload Js End ==============================
 
   

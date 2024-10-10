@@ -1,11 +1,6 @@
 "use client"
 
-import { Button } from "@/components/ui/button";
-
-import DataTable from 'datatables.net-react';
-import DT from 'datatables.net-bs5';
-
-import $, { data } from "jquery";
+import $ from "jquery";
 import React, { useEffect, useRef, useState } from "react";
 import { useAppDispatch } from "@/core/application/hooks";
 import { useForm } from "react-hook-form";
@@ -20,10 +15,8 @@ import { UserEntity } from "@/core/domain/entities/user.entity";
 import Select from 'react-select';
 import { MatiereSchema } from "@/core/application/schemas";
 
-DataTable.use(DT);
-
 const Matieres = () => {
-
+    require('datatables.net-bs5');
     const dispatch = useAppDispatch();
 
     const [isLoading, setIsLoading] = React.useState<boolean>(false);

@@ -1,12 +1,5 @@
 "use client"
-// import { Columns } from "@/components/table/Columns";
-// import { DataTable } from "@/components/table/DataTable";
-import { Button } from "@/components/ui/button";
-
-import DataTable from 'datatables.net-react';
-import DT from 'datatables.net-bs5';
-
-import $, { data } from "jquery";
+import $ from "jquery";
 import React, { useEffect, useRef, useState } from "react";
 import { useAppDispatch } from "@/core/application/hooks";
 import { tagCreateAction, tagListAction } from "@/core/application/actions/tag.action";
@@ -18,9 +11,9 @@ import { z } from "zod";
 import { toast } from "react-toastify";
 import { Form } from "@/components/ui/form";
 
-DataTable.use(DT);
 
 const Tags = () => {
+    require('datatables.net-bs5');
     const [isLoading, setIsLoading] = React.useState<boolean>(false);
     const dispatch = useAppDispatch();
     const [tagData, setTagData] = useState<TagEntity[] | undefined>(undefined);
@@ -199,7 +192,11 @@ const Tags = () => {
 
                 <div className="card overflow-hidden">
                     <div className="card-body p-0">
-                        <table ref={tableRef} id="assignmentTable" className="table table-striped">
+                        <table 
+                          ref={tableRef} 
+                          id="assignmentTable" 
+                          className="table table-striped"
+                        >
                         <thead>
                             <tr>                        
                                 {

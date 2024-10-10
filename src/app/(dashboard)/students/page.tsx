@@ -1,13 +1,9 @@
 "use client"
 
-import DataTable from 'datatables.net-react';
-import DT from 'datatables.net-bs5';
-
-
 import "react-quill/dist/quill.snow.css";
-import ReactQuill from "react-quill";
+// import ReactQuill from "react-quill";
 
-import $, { data } from "jquery";
+import $ from "jquery";
 import React, { useEffect, useRef, useState } from "react";
 import { useAppDispatch } from "@/core/application/hooks";
 import { CycleEntity } from "@/core/domain/entities/cycle.entity";
@@ -19,19 +15,17 @@ import { toast } from "react-toastify";
 import { Form } from "@/components/ui/form";
 import { FiliereEntity } from "@/core/domain/entities/filiere.entity";
 import { ClasseEntity, StudentEntity } from "@/core/domain/entities/classe.entity";
-import { classeCreateAction, classeListAction, studentCreateAction, studentLeaveAction, studentListAction, studentRefusalAction, studentValidationAction } from "@/core/application/actions/classe.action";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { classeCreateAction, studentListAction, studentRefusalAction, studentValidationAction } from "@/core/application/actions/classe.action";
 import DOMPurify from 'dompurify';
 import { TagEntity } from "@/core/domain/entities/tag.entity";
 
 
-DataTable.use(DT);
 
 const Students = () => {
+    require('datatables.net-bs5');
+    const ReactQuill = require('react-quill');
     const [isLoading, setIsLoading] = React.useState<boolean>(false);
-    const router = useRouter();
-    const { data: session, status } = useSession();
+
     const dispatch = useAppDispatch();
     const [classeData, setClasseData] = useState<ClasseEntity[] | undefined>(undefined);
     const [filiereData, setFiliereData] = useState<FiliereEntity[] | undefined>(undefined);

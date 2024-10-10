@@ -1,7 +1,6 @@
 "use client";
 import "react-quill/dist/quill.snow.css";
-import ReactQuill from "react-quill";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -9,15 +8,13 @@ import { DetailSchema } from "@/core/application/schemas";
 import { useAppDispatch } from "@/core/application/hooks";
 import { addDetailsAction } from "@/core/application/actions/user.action";
 import { toast } from "react-toastify";
-import { signIn, useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { serialize } from "v8";
+import { useSession } from "next-auth/react";
 
 // Step 1: Create Zod schema for validation
 type FormData = z.infer<typeof DetailSchema>;
 
 const MyDetails = () => {
-  const router = useRouter();
+  const ReactQuill = require('react-quill');
   const [bio, setBio] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
 

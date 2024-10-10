@@ -1,10 +1,7 @@
 "use client"
 
-import DataTable from 'datatables.net-react';
-import DT from 'datatables.net-bs5';
-
-import $, { data } from "jquery";
-import React, { useEffect, useRef, useState } from "react";
+import $ from "jquery";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { filiereCreateAction, filiereListAction } from "@/core/application/actions/filiere.action";
 import { useAppDispatch } from "@/core/application/hooks";
 import { FiliereEntity } from "@/core/domain/entities/filiere.entity";
@@ -15,9 +12,8 @@ import { z } from "zod";
 import { toast } from "react-toastify";
 import { Form } from "@/components/ui/form";
 
-DataTable.use(DT);
-
 const Filiere = () => {
+    require('datatables.net-bs5');
     const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
     const dispatch = useAppDispatch();
@@ -25,10 +21,12 @@ const Filiere = () => {
 
     const tableRef = useRef<HTMLTableElement>(null);
 
-    const filiereColumns = [
-        { data: "name", title: "Nom" },
-        { data: "description", title: "Description" },
-    ];
+    const filiereColumns = useMemo(()  => {
+        return [
+            { data: "name", title: "Nom" },
+            { data: "description", title: "Description" },
+        ];
+    }, []);
 
     useEffect(() => {
         const initDataTable = () => {
@@ -138,8 +136,8 @@ const Filiere = () => {
   
     };
 
-    return ( 
-        <>
+    return (
+    <>
         <section>
             <div className="dashboard-body">
                 <div className="breadcrumb-with-buttons mb-24 flex-between flex-wrap gap-8">
@@ -203,7 +201,7 @@ const Filiere = () => {
                 </div>
             </div>
         </section>
-        </>
+    </>
      );
 }
  

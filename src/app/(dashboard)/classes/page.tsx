@@ -1,16 +1,13 @@
 "use client"
 
-import DataTable from 'datatables.net-react';
-import DT from 'datatables.net-bs5';
-
-import $, { data } from "jquery";
+import $ from "jquery";
 import React, { useEffect, useRef, useState } from "react";
 import { useAppDispatch } from "@/core/application/hooks";
 import { CycleEntity } from "@/core/domain/entities/cycle.entity";
 import { useForm } from "react-hook-form";
 import { ClasseSchema } from "@/core/application/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { set, z } from "zod";
+import { z } from "zod";
 import { toast } from "react-toastify";
 import { Form } from "@/components/ui/form";
 import { FiliereEntity } from "@/core/domain/entities/filiere.entity";
@@ -18,13 +15,10 @@ import { ClasseEntity, MatiereEntity } from "@/core/domain/entities/classe.entit
 import { classeCreateAction, classeListAction, studentCreateAction, studentLeaveAction } from "@/core/application/actions/classe.action";
 import MatieresComponent from "@/components/classes/MatieresComponent";
 import { UserEntity } from '@/core/domain/entities/user.entity';
-import RelevesComponent from '@/components/classes/RelevesComponent';
-import { Calendar } from 'lucide-react';
 import CalendarProgramsComponent from '@/components/classes/CalendarProgramsComponent';
 
-DataTable.use(DT);
-
 const Classes = () => {
+    require('datatables.net-bs5');
     const [isLoading, setIsLoading] = React.useState<boolean>(false);
     const dispatch = useAppDispatch();
     
