@@ -18,7 +18,7 @@ const Sidebar = () => {
         </button>
 
         <a
-          href="index.html"
+          href="/"
           className="sidebar__logo text-center p-20 position-sticky inset-block-start-0 bg-white w-100 z-1 pb-10"
         >
           <Image
