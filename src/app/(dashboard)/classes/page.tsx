@@ -5,7 +5,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useAppDispatch } from "@/core/application/hooks";
 import { CycleEntity } from "@/core/domain/entities/cycle.entity";
 import { useForm } from "react-hook-form";
-import { ClasseSchema } from "@/core/application/schemas";
+import { ClasseSchema, UniteType } from "@/core/application/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "react-toastify";
@@ -16,20 +16,26 @@ import { classeCreateAction, classeListAction, studentCreateAction, studentLeave
 import MatieresComponent from "@/components/classes/MatieresComponent";
 import { UserEntity } from '@/core/domain/entities/user.entity';
 import CalendarProgramsComponent from '@/components/classes/CalendarProgramsComponent';
+import { useSession } from "next-auth/react";
 
 const Classes = () => {
     require('datatables.net-bs5');
     const [isLoading, setIsLoading] = React.useState<boolean>(false);
     const dispatch = useAppDispatch();
-    
+    const { data: session } = useSession();
+    const [tableData, setTableData] = useState([]);
+
     const [tabSelected, setTabSelected] = useState<'Matiere' | 'Program' | 'Classe'>('Classe');
     const [selectedClasse, setSelectedClasse] = useState<ClasseEntity | undefined>(undefined);
     
     const [classeData, setClasseData] = useState<ClasseEntity[] | undefined>(undefined);
     const [filiereData, setFiliereData] = useState<FiliereEntity[] | undefined>(undefined);
+    const [uniteData, setUniteData] = useState<UniteType[]>([]);
     const [cycleData, setCycleData] = useState<CycleEntity[] | undefined>(undefined);
     const [myClassesData, setMyClassesData] = useState<string[] | undefined>(undefined);
     const [teacherData, setTeacherData] = useState<UserEntity[] | undefined>(undefined);
+
+    const [shouldFetchClasses, setShouldFetchClasses] = useState(0);
 
     const toggleAction = (tab:'Matiere' | 'Program' | 'Classe') => {
         setTabSelected(tab);
@@ -42,6 +48,14 @@ const Classes = () => {
         { data: "cycle", title: "Cycle" },
         { data: "filiere", title: "Filière" },
         { data: "year", title: "Année" },
+        { 
+            data: "parts", 
+            title: "Calendrier",
+            render: function (_data: any, _type: any, row: any) {
+                return row.parts === 'TRI' ? 'Trimestre' : 'Semestre';
+            }
+        },
+        { data: "academic_year", title: "Année Académique" },
         { data: "classe", visible: false },
         {
             title: "Actions",
@@ -78,11 +92,13 @@ const Classes = () => {
                 const rowData = datatable.row($(this).parents('tr')).data();
                 
                 setIsLoading(false)
-                dispatch(studentCreateAction({classe: rowId}))
-                .unwrap()
+                dispatch(studentCreateAction({
+                    classe: rowId,
+                    user: session?.user?.id ?? ''
+                })).unwrap()
                 .then((response: any) => {
                     console.log(response)
-
+                    
                 })
                 .catch((error : any) => {
                     toast.error("Impossible d'exécuter la requête");
@@ -90,6 +106,7 @@ const Classes = () => {
                 })
                 .finally(() => {
                     setIsLoading(false)
+                    setShouldFetchClasses((prev) => prev + 1); 
                 });
             });
 
@@ -112,11 +129,12 @@ const Classes = () => {
                 const rowData = datatable.row($(this).parents('tr')).data();
                 
                 setIsLoading(false)
-                dispatch(studentLeaveAction({classe: rowId}))
-                    .unwrap()
+                dispatch(studentLeaveAction({
+                    classe: rowId,
+                    user: session?.user?.id ?? ''
+                })).unwrap()
                     .then((response: any) => {
-                        console.log(response)
-
+                        console.log(response);
                     })
                     .catch((error : any) => {
                         toast.error("Impossible d'exécuter la requête");
@@ -124,7 +142,7 @@ const Classes = () => {
                     })
                     .finally(() => {
                         setIsLoading(false)
-
+                        setShouldFetchClasses((prev) => prev + 1);
                     });
                     
             });
@@ -143,57 +161,68 @@ const Classes = () => {
     }, [classeData]);
 
     useEffect(() => {
+        console.log("useEffect triggered"); 
         dispatch(classeListAction())
-          .unwrap()
-          .then((classes) => {
+        .unwrap()
+        .then((classes) => {
             console.log(classes)
 
             setMyClassesData(classes.my_classes?.map((instance : any) => instance.classe))
-            setFiliereData(classes.filieres);   
+            setFiliereData(classes.filieres);  
+            setUniteData(classes.unites); 
             setCycleData(classes.cycles);
             setClasseData(classes.data);
             setTeacherData(classes.teachers);
 
-          })
-          .catch((error) => {
-            console.error("Failed to fetch classes: ", error.message || error);
-            alert("Erreur : " + (error.message || error));
-          });
-        
-    }, [dispatch]);
+            console.log("oui, je suis ici")
 
-
-    useEffect(() => {    
-        if (tableRef.current) {
-            const datatable = $(tableRef.current).DataTable()   
-            const filteredData = classeData?.map(classe => ({
+            const filteredData = classes.data?.map((classe : any) => ({
                 id: classe.id ? classe.id : '',
                 filiere: classe.filiere ? classe.filiere.name : '',
                 cycle: classe.cycle ? classe.cycle.name : '',
                 year: classe.year,
+                academic_year: classe.academic_year,
+                parts: classe.parts,
                 classe: classe,
-                registered : classe.id ? myClassesData?.includes(classe.id) ?? undefined : false
+                registered : classe.id ? classes.my_classes?.map((instance : any) => instance.classe)?.includes(classe.id) ?? undefined : false
             }));
+            console.log("Filtered data", filteredData)
+            setTableData(filteredData);
 
+
+        })
+        .catch((error) => {
+            console.error("Failed to fetch classes: ", error.message || error);
+            alert("Erreur : " + (error.message || error));
+        });
+    }, [dispatch]);
+
+
+    useEffect(() => {    
+        console.log("Table data", tableData)
+        if (tableRef.current) {
+            const datatable = $(tableRef.current).DataTable()   
+            
             datatable.clear().draw();
-            datatable.rows.add(filteredData || []).draw();
+            datatable.rows.add(tableData || []).draw();
             datatable.columns.adjust().draw();
         }
-    }, [myClassesData, classeData, tableRef]);
+    }, [tableData, tableRef]);
 
 
 
     const form = useForm<z.infer<typeof ClasseSchema>>({
         resolver: zodResolver(ClasseSchema),
         defaultValues: {
-          filiere: "",
-          cycle: "", 
-          year: 1,
+            filiere: "",
+            cycle: "", 
+            year: 1,
+            parts: "",
+            academic_year: "",
         },
     });
     
     const onSubmit = async (values: z.infer<typeof ClasseSchema>) => {
-        alert(JSON.stringify(values))
         setIsLoading(true)
         await dispatch(classeCreateAction(values))
             .unwrap()
@@ -201,13 +230,15 @@ const Classes = () => {
               console.log(response)
               if(response.success){
                 toast.success(response.message);
-                setCycleData((prevData) => [
+                setClasseData((prevData) => [
                     ...(prevData || []),
                     {
                         id: response.data.id,
-                        name: response.data.name,
-                        description: response.data.description,
-                        duration: response.data.duration
+                        filiere: response.data.filiere,
+                        cycle: response.data.cycle,
+                        year: response.data.year,
+                        parts: response.data.parts,
+                        academic_year: response.data.academic_year,
                     }
                 ]);
 
@@ -274,8 +305,8 @@ const Classes = () => {
                     
                     <div className="flex gap-1"> 
 
-                        <button type="button" className="border btn-main rounded-pill py-8 px-20" data-bs-toggle="modal" data-bs-target="#cycleCreate">
-                            <i className="ph ph-caret-plus"></i> Ajouter Classe
+                        <button type="button" className="border btn-main rounded-pill py-8 px-20 text-white" data-bs-toggle="modal" data-bs-target="#cycleCreate">
+                            <i className="ph ph-plus"></i> Ajouter Classe
                         </button>
                     </div>
                     
@@ -289,8 +320,8 @@ const Classes = () => {
                                         <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div className="modal-body">
-                                        <div className="mb-3">
-                                            <label htmlFor="filiere" className="form-label">Choisir le cycle</label>
+                                        <div className="mb-20">
+                                            <label htmlFor="filiere" className="form-label text-secondary">Choisir le cycle</label>
                                             <select 
                                                 id="filiere" 
                                                 className="form-control" 
@@ -304,8 +335,8 @@ const Classes = () => {
                                                 ))}
                                             </select>
                                         </div>
-                                        <div className="mb-3">
-                                            <label htmlFor="filiere" className="form-label">Choisir une Filière</label>
+                                        <div className="mb-20">
+                                            <label htmlFor="filiere" className="form-label text-secondary">Choisir une Filière</label>
                                             <select 
                                                 id="filiere" 
                                                 className="form-control" 
@@ -319,20 +350,61 @@ const Classes = () => {
                                                 ))}
                                             </select>
                                         </div>
-                                        <div className="input-group mb-3">
-                                            <input
-                                                type="number"
-                                                id="year"
-                                                className="form-control"
-                                                placeholder="Année"
-                                                {...form.register("year", {
-                                                    setValueAs: (v) => v === "" ? undefined : parseInt(v, 10),
-                                                })}
-                                            />
-                                                
-                                            <div className="input-group-append">
-                                                <span className="input-group-text h-full" id="basic-addon2">année</span>
+                                        <div className="mb-20">
+                                            <label htmlFor="filiere" className="form-label text-secondary">Choisir l'année d'étude</label>
+                                            <div className="input-group">
+                                                <input
+                                                    type="number"
+                                                    id="year"
+                                                    className="form-control"
+                                                    placeholder="Année"
+                                                    {...form.register("year", {
+                                                        setValueAs: (v) => v === "" ? undefined : parseInt(v, 10),
+                                                    })}
+                                                />
+                                                    
+                                                <div className="input-group-append">
+                                                    <span className="input-group-text h-full" id="basic-addon2">année</span>
+                                                </div>
                                             </div>
+                                        </div>
+
+                                        <div className="mb-20">
+                                            <label htmlFor="parts" className="form-label text-secondary">Choisir une découpage du calendrier scolaire</label>
+                                            <select 
+                                                id="parts" 
+                                                className="form-control" 
+                                                {...form.register("parts")}
+                                            >
+                                                <option value="">Sélectionnez une valeur</option>
+                                                <option value="TRI">
+                                                    Trimestre
+                                                </option>
+                                                <option value="SEM">
+                                                    Semestre
+                                                </option>
+                                            </select>
+                                        </div>
+
+                                        <div className="mb-20">
+                                            <label htmlFor="academic_year" className="form-label text-secondary">Choisir l'année académique</label>
+                                            <select
+                                                id="academic_year"
+                                                className="form-control"
+                                                {...form.register("academic_year", {
+                                                    required: "L'année académique est requise."
+                                                })}
+                                            >
+                                                <option value="">Sélectionnez une année</option>
+                                                {[...Array(10)].map((_, i) => {
+                                                    const year = new Date().getFullYear() + i;
+                                                    return (
+                                                        <option key={year} value={year}>
+                                                            {year}
+                                                        </option>
+                                                    );
+                                                })}
+                                            </select>
                                         </div>
                                         
                                     </div>
@@ -364,7 +436,7 @@ const Classes = () => {
         {
             tabSelected==='Matiere' && selectedClasse!==undefined && (
                 <>
-                    <MatieresComponent classe={selectedClasse} teachers={teacherData} onRetour={handleRetourClick}/>
+                    <MatieresComponent classe={selectedClasse} unites={uniteData} teachers={teacherData} onRetour={handleRetourClick}/>
                 </>
             )
         }

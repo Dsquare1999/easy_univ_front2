@@ -10,13 +10,24 @@ export const ClasseSchema = z.object({
     year: z.number().int().positive({
         message: "L'année doit être positive et entière",
     }),
+    academic_year: z.string().min(1, {
+        message: "L'année académique est requise",
+    }),
+    parts: z.string().min(1, {
+        message: "Les parties sont requises",
+    }),
 });
 
 export const StudentSchema = z.object({
     classe: z.string().min(1, {
       message: "La classe est requise",
     }),
+    user: z.string().min(1, {
+      message: "L'utilisateur est requis",
+    }),
 });
+
+export type StudentType = z.infer<typeof StudentSchema>;
 
 export const StudentValidationSchema = z.object({
   tag: z.string().min(1, {

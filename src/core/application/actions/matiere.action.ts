@@ -1,8 +1,8 @@
 "use client";
 
-import { createAsyncThunk } from "@reduxjs/toolkit";
+import { createAsyncThunk, Update } from "@reduxjs/toolkit";
 import { z } from "zod";
-import { MatiereSchema, NoteSchema, ProgramSchema, ReportProgramSchema } from "../schemas";
+import { MatiereSchema, CreateMatiereType, NoteSchema, ProgramSchema, ReportProgramSchema, UpdateMatiereType } from "../schemas";
 import {
   matiereList,
   matiereCreate,
@@ -33,29 +33,10 @@ export const matiereListAction = createAsyncThunk(
 
 export const matiereCreateAction = createAsyncThunk(
   "matiere/create",
-  async (
-    {
-      name,
-      code,
-      classe,
-      coefficient,
-      hours,
-      teacher,
-      year_part,
-    }: z.infer<typeof MatiereSchema>,
-    { rejectWithValue, dispatch }
-  ) => {
+  async (matiere: CreateMatiereType, { rejectWithValue, dispatch }) => {
     let matiereResult;
     await dispatch(
-      matiereCreate.initiate({
-        name,
-        code,
-        classe,
-        coefficient,
-        hours,
-        teacher,
-        year_part,
-      })
+      matiereCreate.initiate(matiere)
     )
       .unwrap()
       .then((result) => {
@@ -74,31 +55,10 @@ export const matiereCreateAction = createAsyncThunk(
 
 export const matiereUpdateAction = createAsyncThunk(
   "matiere/update",
-  async (
-    {
-      id,
-      name,
-      code,
-      classe,
-      coefficient,
-      hours,
-      teacher,
-      year_part,
-    }: z.infer<typeof MatiereSchema>,
-    { rejectWithValue, dispatch }
-  ) => {
+  async (matiere: UpdateMatiereType & { id: string }, { rejectWithValue, dispatch }) => {
     let matiereResult;
     await dispatch(
-      matiereUpdate.initiate({
-        id,
-        name,
-        code,
-        classe,
-        coefficient,
-        hours,
-        teacher,
-        year_part,
-      })
+      matiereUpdate.initiate(matiere)
     )
       .unwrap()
       .then((result) => {
@@ -306,7 +266,7 @@ export const releveCreateAction = createAsyncThunk(
     )
       .unwrap()
       .then((result) => {
-        console.log("Relevés updated results");
+        console.log("Releves updated results");
         console.log(JSON.stringify(result));
         releveResult = result;
       })

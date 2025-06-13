@@ -46,7 +46,7 @@ const Login: React.FunctionComponent<LoginProps> = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }
 
   return (
     <section className="auth d-flex">

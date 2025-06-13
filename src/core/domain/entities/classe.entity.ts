@@ -11,7 +11,7 @@ export interface ClasseEntity {
     academic_year: string;
     parts: string;
     status?: number;
-    matieres: MatiereEntity[];
+    matieres?: MatiereEntity[];
 }
 
 export interface ClasseState {
@@ -35,6 +35,7 @@ export interface MatiereEntity {
     id ?: string;
     name : string;
     code : string;
+    unite: string;
     classe: string;
     coefficient: number;
     hours: number;

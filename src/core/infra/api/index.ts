@@ -1,5 +1,6 @@
 import { authApi } from "./auth.api";
 import { filiereApi } from "./filiere.api";
+import { uniteApi } from "./unite.api";
 import { cycleApi } from "./cycle.api";
 import { classeApi } from "./classe.api";
 import { matiereApi } from "./matiere.api";
@@ -31,6 +32,12 @@ export const {
   useFiliereCreateMutation,
   endpoints: { filiereList, filiereCreate },
 } = filiereApi;
+
+export const {
+  useUniteListQuery,
+  useUniteCreateMutation,
+  endpoints: { uniteList, uniteCreate },
+} = uniteApi;
 
 export const {
   useCycleListQuery,

@@ -8,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "react-toastify";
 import { MatiereEntity } from "@/core/domain/entities/classe.entity";
+import { UniteType } from "@/core/application/schemas";
 import { matiereCreateAction, matiereListAction } from "@/core/application/actions/matiere.action";
 
 
@@ -22,12 +23,14 @@ const Matieres = () => {
     const [isLoading, setIsLoading] = React.useState<boolean>(false);
     const [matiereData, setMatiereData] = useState<MatiereEntity[] | undefined>(undefined);
     const [teachers, setTeachers] = useState<UserEntity[] | undefined>(undefined);
+    const [unites, setUnites] = useState<UniteType[]>([]);
 
     const tableRef = useRef<HTMLTableElement>(null);
 
     const matiereColumns = [
         { data: "id", visible: false },
         { data: "code", title: "Code" },
+        { data: "unite", title: "Unité" },
         { data: "name", title: "Intitulé" },
         { data: "teacher", title: "Chargé" },
         { data: "hours", title: "Quotat horaire" },
@@ -69,6 +72,7 @@ const Matieres = () => {
             console.log(matieres)
             setMatiereData(matieres.data);
             setTeachers(matieres.teachers);
+            setUnites(matieres.unites);
           })
           .catch((error) => {
             console.error("Failed to fetch classes: ", error.message || error);
@@ -84,6 +88,7 @@ const Matieres = () => {
             const filteredData = matiereData?.map(matiere => ({
                 id: matiere.id ? matiere.id : '',
                 code: matiere.libelle ? matiere.libelle : '',
+                unite: matiere.unite ? matiere.unite : '',
                 name: matiere.name ? matiere.name : '',
                 teacher: matiere.teacher ? matiere.teacher.lastname + ' ' + matiere.teacher.firstname : 'Non défini',
                 hours: matiere.hours ? matiere.hours : '',
@@ -108,6 +113,7 @@ const Matieres = () => {
         resolver: zodResolver(MatiereSchema),
         defaultValues: {
             code : "",
+            unite : "",
             name : "",
             hours : 1,
             coefficient : 1,
@@ -185,8 +191,8 @@ const Matieres = () => {
                             <li><span className="text-main-600 fw-normal text-15">Classes</span></li>
                         </ul>
                     </div>
-                    <button type="button" className="border btn-main rounded-pill py-8 px-20" data-bs-toggle="modal" data-bs-target="#cycleCreate">
-                        <i className="ph ph-caret-plus"></i> Ajouter Matière
+                    <button type="button" className="border btn-main rounded-pill py-8 px-20 text-white" data-bs-toggle="modal" data-bs-target="#cycleCreate">
+                        <i className="ph ph-plus"></i> Ajouter Matière
                     </button>
                     
                     <div className="modal fade" id="cycleCreate" tabIndex={-1} aria-hidden="true">
@@ -212,6 +218,22 @@ const Matieres = () => {
                                             className="form-control mb-20" 
                                             placeholder="Intitulé de la matière" 
                                             {...register("name")} />
+
+                                        <div className="mb-20">
+                                            <label htmlFor="unite" className="form-label text-secondary">Unité d'Enseignement</label>
+                                            <select 
+                                                id="unite" 
+                                                className="form-control" 
+                                                {...register("unite")}
+                                            >
+                                                <option value="">Sélectionnez Unité d'Enseignement</option>
+                                                {unites?.map(unite => (
+                                                    <option key={unite.id} value={unite.id}>
+                                                        {unite.name}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
 
                                         <div className="input-group mb-20">
                                             <input

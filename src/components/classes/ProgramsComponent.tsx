@@ -281,11 +281,11 @@ const ProgramsComponent = ({
           <div className="flex gap-1">
             <button
               type="button"
-              className="border btn-main rounded-pill py-8 px-20"
+              className="border btn-main rounded-pill py-8 px-20 text-white"
               data-bs-toggle="modal"
               data-bs-target="#programCreate"
             >
-              <i className="ph ph-caret-plus"></i> Ajouter Programme
+              <i className="ph ph-plus"></i> Ajouter Programme
             </button>
           </div>
         </div>

@@ -4,6 +4,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { classeCreate, classeList, classeRetrieve, matiereCreate, matiereDelete, matiereList, matiereUpdate, studentCreate, studentLeave, studentList, studentRefuse, studentValidate } from "@/core/infra/api";
 import { z } from "zod";
 import { ClasseSchema, MatiereSchema, StudentRefusalSchema, StudentSchema, StudentValidationSchema } from "../schemas";
+import { StudentType } from "../schemas/classe.schema";
 
 
 export const classeListAction = createAsyncThunk(
@@ -25,9 +26,9 @@ export const classeListAction = createAsyncThunk(
 
 export const classeCreateAction = createAsyncThunk(
   "classe/create",
-  async ({filiere, cycle, year} : z.infer<typeof ClasseSchema>, { rejectWithValue, dispatch }) => {
+  async ({filiere, cycle, year, academic_year, parts} : z.infer<typeof ClasseSchema>, { rejectWithValue, dispatch }) => {
     let classeResult;
-    await dispatch(classeCreate.initiate({filiere, cycle, year})).unwrap()
+    await dispatch(classeCreate.initiate({filiere, cycle, year, academic_year, parts})).unwrap()
       .then((result)=> {
         console.log("Classe create results")
         console.log(JSON.stringify(result))
@@ -80,9 +81,9 @@ export const studentListAction = createAsyncThunk(
 
 export const studentCreateAction = createAsyncThunk(
   "student/create",
-  async ({classe} : z.infer<typeof StudentSchema>, { rejectWithValue, dispatch }) => {
+  async (student : StudentType, { rejectWithValue, dispatch }) => {
     let classeResult;
-    await dispatch(studentCreate.initiate({classe})).unwrap()
+    await dispatch(studentCreate.initiate(student)).unwrap()
       .then((result)=> {
         console.log("Student create results")
         console.log(JSON.stringify(result))
@@ -99,9 +100,9 @@ export const studentCreateAction = createAsyncThunk(
 
 export const studentLeaveAction = createAsyncThunk(
   "student/leave",
-  async ({classe} : z.infer<typeof StudentSchema>, { rejectWithValue, dispatch }) => {
+  async (student : StudentType, { rejectWithValue, dispatch }) => {
     let classeResult;
-    await dispatch(studentLeave.initiate({classe})).unwrap()
+    await dispatch(studentLeave.initiate(student)).unwrap()
       .then((result)=> {
         console.log("Student left results")
         console.log(JSON.stringify(result))

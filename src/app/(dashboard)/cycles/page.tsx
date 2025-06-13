@@ -26,6 +26,16 @@ const Cycles = () => {
             { data: "name", title: "Nom" },
             { data: "description", title: "Description" },
             { data: "duration", title: "Durée" },
+            {
+                title: "Actions",
+                data: "modify",
+                orderable: false,
+                render: function (_data: any, _type: any, row: any) {
+                return `<button class="btn btn-main rounded-4 py-4 px-10 text-sm mr-1" data-bs-toggle="modal" data-bs-target="#cycleCreate" data-id="${row.id}">Modifier</button>` +
+                        `<button class="btn btn-danger rounded-4 py-4 px-10 text-sm" data-id="${row.id}">Supprimer</button>`
+
+                }
+            }
         ];
     }, []);
     
@@ -83,7 +93,6 @@ const Cycles = () => {
       });
     
     const onSubmit = async (values: z.infer<typeof CycleSchema>) => {
-        alert(JSON.stringify(values))
         setIsLoading(true)
         await dispatch(cycleCreateAction(values))
             .unwrap()
@@ -138,8 +147,8 @@ const Cycles = () => {
                             <li><span className="text-main-600 fw-normal text-15">Cycles</span></li>
                         </ul>
                     </div>
-                    <button type="button" className="border btn-main rounded-pill py-8 px-20" data-bs-toggle="modal" data-bs-target="#cycleCreate">
-                        <i className="ph ph-caret-plus"></i> Ajouter Cycle
+                    <button type="button" className="border btn-main rounded-pill py-8 px-20 text-white" data-bs-toggle="modal" data-bs-target="#cycleCreate">
+                        <i className="ph ph-plus"></i> Ajouter Cycle
                     </button>
                     
                     <div className="modal fade" id="cycleCreate" tabIndex={-1} aria-hidden="true">

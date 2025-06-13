@@ -9,25 +9,26 @@ import Select  from "react-select";
 import React, { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-import { set, z } from "zod";
-import { MatiereSchema } from "@/core/application/schemas";
+import { CreateMatiereSchema, CreateMatiereType, UniteType, UpdateMatiereSchema, UpdateMatiereType } from "@/core/application/schemas";
 import RelevesComponent from "./RelevesComponent";
 import ProgramsComponent from "./ProgramsComponent";
 import { releveGenerateAction } from '@/core/application/actions/matiere.action';
 
 interface MatieresComponentProps {
-    classe: ClasseEntity
+    classe: ClasseEntity;
+    unites: UniteType[];
     teachers : UserEntity[] | undefined
     onRetour: (updatedMatieres: MatiereEntity[]) => void;
 }
-const MatieresComponent = ({classe, teachers, onRetour} : MatieresComponentProps) => {
+const MatieresComponent = ({classe, unites, teachers, onRetour} : MatieresComponentProps) => {
 
     const dispatch = useAppDispatch();
 
     const [isLoading, setIsLoading] = React.useState<boolean>(false);
-    const [matiereData, setMatiereData] = useState<MatiereEntity[]>(classe.matieres);
+    const [matiereData, setMatiereData] = useState<MatiereEntity[]>(classe.matieres ?? []);
 
     const [selectedTeacher, setSelectedTeacher] = useState<any>(null);
+    const [selectedUnite, setSelectedUnite] = useState<any>(null);
     const [selectPrograms, setSelectPrograms] = useState<boolean>(false);
     const [selectReleves, setSelectReleves] = useState<boolean>(false);
     const [selectedMatiere, setSelectedMatiere] = useState<MatiereEntity | undefined>(undefined);
@@ -59,6 +60,7 @@ const MatieresComponent = ({classe, teachers, onRetour} : MatieresComponentProps
     };
     const matiereColumns = [
         { data: "id", visible: false },
+        { data: "unite.code", title: "UE" },
         { data: "code", title: "Code" },
         { data: "name", title: "Intitulé" },
         { data: "teacher", title: "Chargé" },
@@ -96,6 +98,7 @@ const MatieresComponent = ({classe, teachers, onRetour} : MatieresComponentProps
                     setEditingMatiere(matiere);
                     setValueUpdate("code", matiere.code);
                     setValueUpdate("name", matiere.name);
+                    setValueUpdate("unite", matiere.unite);
                     setValueUpdate("hours", matiere.hours);
                     setValueUpdate("coefficient", matiere.coefficient);
                     setValueUpdate("teacher", matiere.teacher?.id);
@@ -161,6 +164,7 @@ const MatieresComponent = ({classe, teachers, onRetour} : MatieresComponentProps
             const datatable = $(MatiereTableRef.current).DataTable()   
             const filteredData = matiereData?.map(matiere => ({
                 id: matiere.id ? matiere.id : '',
+                unite: matiere.unite ? matiere.unite : '',
                 code: matiere.libelle ? matiere.libelle : '',
                 name: matiere.name ? matiere.name : '',
                 teacher: matiere.teacher ? matiere.teacher.lastname + ' ' + matiere.teacher.firstname : 'Non défini',
@@ -181,8 +185,8 @@ const MatieresComponent = ({classe, teachers, onRetour} : MatieresComponentProps
         handleSubmit: handleSubmitCreate,
         formState: { errors: errorsCreate },
         reset: resetCreate,
-    } = useForm<z.infer<typeof MatiereSchema>>({
-        resolver: zodResolver(MatiereSchema),
+    } = useForm<CreateMatiereType>({
+        resolver: zodResolver(CreateMatiereSchema),
     });
     
     const {
@@ -191,8 +195,8 @@ const MatieresComponent = ({classe, teachers, onRetour} : MatieresComponentProps
         handleSubmit: handleSubmitUpdate,
         formState: { errors: errorsUpdate },
         reset: resetUpdate,
-    } = useForm<z.infer<typeof MatiereSchema>>({
-        resolver: zodResolver(MatiereSchema),
+    } = useForm<UpdateMatiereType>({
+        resolver: zodResolver(UpdateMatiereSchema),
     });
 
 
@@ -206,6 +210,11 @@ const MatieresComponent = ({classe, teachers, onRetour} : MatieresComponentProps
             setValueCreate("year_part", parseInt(selectedOption.value));
         }
     };
+    const handleChangeUnite = (selectedOption: any) => {
+        if(selectedOption){
+            setValueCreate("unite", selectedOption.value);
+        }
+    }
 
 
     const handleUpdateTeacher = (selectedOption: any) => {
@@ -221,6 +230,19 @@ const MatieresComponent = ({classe, teachers, onRetour} : MatieresComponentProps
 
         }
     };
+    const handleUpdateUnite = (selectedOption: any) => { 
+        if(selectedOption){
+            setValueUpdate("unite", selectedOption.value);
+            setSelectedUnite(selectedOption);
+        }
+    }
+
+
+    const unitesOptions = unites.map(unite => ({
+        value: unite.id,
+        label: unite.name
+    }));
+
     const teacherOptions = teachers?.map(teacher => ({
         value: teacher.id,
         label: (
@@ -249,7 +271,7 @@ const MatieresComponent = ({classe, teachers, onRetour} : MatieresComponentProps
       ]
     : [];
 
-    const onSubmit = async (values: z.infer<typeof MatiereSchema>) => {
+    const onSubmit = async (values: CreateMatiereType) => {
         values.classe = classe ? classe.id : "";
         setIsLoading(true)
         await dispatch(matiereCreateAction(values))
@@ -276,13 +298,13 @@ const MatieresComponent = ({classe, teachers, onRetour} : MatieresComponentProps
   
     };
 
-    const onUpdateSubmit = async (values: z.infer<typeof MatiereSchema>) => {
+    const onUpdateSubmit = async (values: UpdateMatiereType) => {
         alert(JSON.stringify(values))
         values.classe = classe ? classe.id : "";
         alert(JSON.stringify(values))
         setIsLoading(true)
         if (editingMatiere) {
-            values.id = editingMatiere.id;
+            values.id = editingMatiere.id ?? "";
             await dispatch(matiereUpdateAction(values))
                 .unwrap()
                 .then((response: any) => {
@@ -357,14 +379,14 @@ const MatieresComponent = ({classe, teachers, onRetour} : MatieresComponentProps
                         </ul>
                     </div>
                     <div className="flex gap-1">
-                        <button type="button" className="border btn bg-emerald-600 hover:bg-emerald-800 active:bg-emerald-600 rounded-pill py-8 px-20" data-bs-toggle="modal" data-bs-target="#matiereCreate">
-                            <i className="ph ph-caret-plus"></i> Soumettre Emploi du Temps
+                        <button type="button" className="border btn btn-warning rounded-pill py-8 px-20" data-bs-toggle="modal" data-bs-target="">
+                            <i className="ph ph-plus"></i> Soumettre Emploi du Temps
                         </button>
                         <button type="button" className="border btn bg-emerald-600 hover:bg-emerald-800 active:bg-emerald-600 rounded-pill py-8 px-20" onClick={handleGenerateReleve}>
-                            <i className="ph ph-caret-plus"></i> Générer Résultat
+                            <i className="ph ph-plus"></i> Générer Résultat
                         </button>
-                        <button type="button" className="border btn-main rounded-pill py-8 px-20" data-bs-toggle="modal" data-bs-target="#matiereCreate">
-                            <i className="ph ph-caret-plus"></i> Ajouter Matière
+                        <button type="button" className="border btn-main rounded-pill py-8 px-20 text-white" data-bs-toggle="modal" data-bs-target="#matiereCreate">
+                            <i className="ph ph-plus"></i> Ajouter Matière
                         </button>
                     </div>
                     
@@ -394,6 +416,17 @@ const MatieresComponent = ({classe, teachers, onRetour} : MatieresComponentProps
                                             placeholder="Intitulé de la matière" 
                                             {...registerCreate("name")} />
                                             {errorsCreate.name && <p className="text-danger">{errorsCreate.name.message}</p>}
+
+                                        <div className="mb-20 text-gray-800">
+                                            <Select 
+                                                id="unite"
+                                                options={unitesOptions}
+                                                placeholder="Sélectionnez Unité d'Enseignement"
+                                                onChange={handleChangeUnite} 
+                                                onBlur={() => {}} 
+                                            />
+                                            {errorsCreate.unite && <p className="text-danger">{errorsCreate.unite.message}</p>}
+                                        </div>
 
                                         <div className="input-group mb-20">
                                             <input
@@ -496,7 +529,19 @@ const MatieresComponent = ({classe, teachers, onRetour} : MatieresComponentProps
                                             {...registerUpdate("name")} 
                                         />
                                         {errorsUpdate.name && <p className="text-danger">{errorsUpdate.name.message}</p>}
-
+                                        <div className="mb-20 text-gray-800">
+                                            <Select 
+                                                id="updated-unite"
+                                                options={unitesOptions}
+                                                placeholder="Sélectionnez Unité d'Enseignement"
+                                                onChange={handleUpdateUnite} 
+                                                value={selectedUnite}
+                                                menuPlacement="bottom"
+                                                openMenuOnFocus={true}
+                                                onBlur={() => {}} 
+                                            />
+                                            {errorsUpdate.unite && <p className="text-danger">{errorsUpdate.unite.message}</p>}
+                                        </div>
                                         <div className="input-group mb-20">
                                             <input
                                                 type="number"

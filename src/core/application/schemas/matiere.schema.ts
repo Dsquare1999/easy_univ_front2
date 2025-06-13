@@ -2,12 +2,15 @@ import * as z from 'zod';
 
 
 export const MatiereSchema = z.object({
-    id: z.string().optional(),
+    id: z.string(),
     name: z.string().min(1, {
       message: "Le nom de la matière est requis",
     }),
     code: z.string().min(1, {
       message: "Le code de la matière est requis",
+    }),
+    unite: z.string().min(1, {
+        message: "L'unité d'enseignement est requise",
     }),
     classe: z.string().optional(),
     teacher: z.string().optional(),
@@ -21,6 +24,18 @@ export const MatiereSchema = z.object({
       message: "La partie du cycle de la matière doit être positif et entier",
     }),
   });
+
+export const CreateMatiereSchema = MatiereSchema.omit({
+    id: true,
+  });
+
+export const UpdateMatiereSchema = MatiereSchema.partial().extend({
+    id: z.string(),
+  });
+
+export type MatiereType = z.infer<typeof MatiereSchema>;
+export type CreateMatiereType = z.infer<typeof CreateMatiereSchema>;
+export type UpdateMatiereType = z.infer<typeof UpdateMatiereSchema>;
 
 export const ProgramSchema = z.object({
     id: z.string().optional(),
@@ -64,6 +79,7 @@ export const ReportProgramSchema = z.object({
   
 
 export const NoteSchema = z.object({
+  id: z.string().optional(),
   examType : z.string().min(1, { message: "Le type d'examen est requis." }),
   notes: z.record(
     z.object({
@@ -80,3 +96,14 @@ export const NoteSchema = z.object({
     })
   ),
 });
+
+export const CreateNoteSchema = NoteSchema.omit({
+  id: true,
+});
+export const UpdateNoteSchema = NoteSchema.partial().extend({
+  id: z.string(),
+});
+
+export type NoteType = z.infer<typeof NoteSchema>;
+export type CreateNoteType = z.infer<typeof CreateNoteSchema>;
+export type UpdateNoteType = z.infer<typeof UpdateNoteSchema>;

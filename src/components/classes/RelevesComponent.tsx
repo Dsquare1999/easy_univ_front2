@@ -44,6 +44,9 @@ const RelevesComponent = ({cycle, filiere, matiere, onRetour} : RelevesComponent
       } = useForm<z.infer<typeof NoteSchema>>({
         resolver: zodResolver(NoteSchema),
       });
+      const roundToTwoDecimal = (value: number) => {
+        return Math.round(value * 100) / 100;
+      }
     
       const handleExamChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setExamType(e.target.value);
@@ -119,6 +122,8 @@ const RelevesComponent = ({cycle, filiere, matiere, onRetour} : RelevesComponent
             });
         setIsLoading(false);
       };
+    
+
 
     useEffect(() => {
         if (ReleveTableRef.current) {      
@@ -146,12 +151,12 @@ const RelevesComponent = ({cycle, filiere, matiere, onRetour} : RelevesComponent
                 const exam2 = releve.exam2 !== null ? parseFloat(releve.exam2) : 'N/A';
                 const partial = releve.partial !== null ? parseFloat(releve.partial) : 'N/A';
                 const remedial = releve.remedial !== null ? parseFloat(releve.remedial) : 'N/A';
-                const moy_exams = (exam1 !== 'N/A' && exam2 !== 'N/A')
-                    ? (parseFloat(releve.exam1) + parseFloat(releve.exam2)) / 2
-                    : 'N/A';
-                const moy_general = (typeof releve.exam1 === 'number' && typeof releve.exam2 === 'number' && typeof releve.partial === 'number')
-                    ? (releve.exam1 + releve.exam2 + releve.partial) / 3
-                    : 'N/A';
+                const moy_exams = (exam1 !== 'N/A' && exam2 !== 'N/A') ? roundToTwoDecimal((exam1 + exam2) / 2): 'N/A';
+                const moy_general = (typeof exam1 === 'number' && typeof exam2 === 'number' && typeof partial === 'number')
+                    ? roundToTwoDecimal((exam1 + exam2 + partial) / 3) : 'N/A';
+
+                console.log("Releve Data: ", releve);
+                console.log("Exam1: ", exam1, "Exam2: ", exam2, "Partial: ", partial, "Remedial: ", remedial, "Moy Exams: ", moy_exams, "Moy General: ", moy_general);
     
                 return {
                     id: releve.id ? releve.id : '',
@@ -205,10 +210,10 @@ const RelevesComponent = ({cycle, filiere, matiere, onRetour} : RelevesComponent
                     </div>
                     <div className="flex gap-1">
                         <button type="button" className="border btn bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 rounded-pill py-8 px-20">
-                            <i className="ph ph-caret-plus"></i> Générer Relevé
+                            <i className="ph ph-plus"></i> Générer Relevé
                         </button>
-                        <button type="button" className="border btn-main rounded-pill py-8 px-20" data-bs-toggle="modal" data-bs-target="#releveCreate">
-                            <i className="ph ph-caret-plus"></i> Ajouter Note
+                        <button type="button" className="border btn-main rounded-pill py-8 px-20 text-white" data-bs-toggle="modal" data-bs-target="#releveCreate">
+                            <i className="ph ph-plus"></i> Ajouter Note
                         </button>
                     </div>
                 </div>
@@ -336,8 +341,8 @@ const RelevesComponent = ({cycle, filiere, matiere, onRetour} : RelevesComponent
                 <div className="card overflow-hidden">
                     <div className="card-body p-0">
                         <div className="row">
-                            <div className="col-12 flex items-center gap-4 justify-around text-xs">
-                                <div className="mt-20 text-gray-900 px-20 py-10 rounded bg-main-50">
+                            <div className="col-12 flex items-center gap-8 justify-around text-xs p-2 px-20">
+                                <div className="mt-20 text-gray-900 px-20 py-10 rounded bg-main-50 flex-1">
                                     <h5 className="text-left mb-10 text-main-600">Chargé</h5>
                                     <div className="w-full flex flex-wrap justify-between items-center">
                                         <strong>Nom Complet : </strong>
@@ -353,7 +358,7 @@ const RelevesComponent = ({cycle, filiere, matiere, onRetour} : RelevesComponent
                                     </div>
                                 </div>
 
-                                <div className="mt-20 text-gray-900 px-20 py-10 rounded bg-main-50 ">
+                                <div className="mt-20 text-gray-900 px-20 py-10 rounded bg-main-50 flex-1 ">
                                     <h5 className="text-left mb-10 text-main-600">Cycle</h5>
                                     <div className="w-full flex flex-wrap justify-between items-center">
                                         <strong>Nom du Cycle : </strong>
@@ -361,7 +366,7 @@ const RelevesComponent = ({cycle, filiere, matiere, onRetour} : RelevesComponent
                                     </div>
                                     <div className="w-full flex flex-wrap justify-between items-center">
                                         <strong>Description : </strong>
-                                        <span>{cycle?.description || 'Aucune description'}</span>
+                                        <span>{cycle?.description? cycle.description.split(' ').slice(0, 6).join(' ') + '...': 'Aucune description'}</span>
                                     </div>
                                     <div className="w-full flex flex-wrap justify-between items-center">
                                         <strong>Durée du Cycle : </strong>
@@ -369,7 +374,7 @@ const RelevesComponent = ({cycle, filiere, matiere, onRetour} : RelevesComponent
                                     </div>
                                 </div>
 
-                                <div className="mt-20 text-gray-900 px-20 py-10 rounded bg-main-50">
+                                <div className="mt-20 text-gray-900 px-20 py-10 rounded bg-main-50 flex-1">
                                     <h5 className="text-left mb-10 text-main-600">Filière</h5>
                                     <div className="w-full flex flex-wrap justify-between items-center">
                                         <strong>Nom de la Filière : </strong>
@@ -381,7 +386,7 @@ const RelevesComponent = ({cycle, filiere, matiere, onRetour} : RelevesComponent
                                     </div>
                                     <div className="w-full flex flex-wrap justify-between items-center">
                                         <strong>Description : </strong>
-                                        <span>{filiere?.description || 'Aucune description'}</span>
+                                        <span>{filiere?.description? filiere.description.split(' ').slice(0, 6).join(' ') + '...': 'Aucune description'}</span>
                                     </div>
                                 </div>
                             </div>

@@ -134,24 +134,6 @@ const HeadBar = () => {
                             <div className="card-body">
                                 <div className="max-h-270 overflow-y-auto scroll-sm pe-8">
                                     <div className="form-check form-radio d-flex align-items-center justify-content-between ps-0 mb-16">
-                                      <label className="ps-0 form-check-label line-height-1 fw-medium text-secondary-light" htmlFor="arabic"> 
-                                        <span className="text-black hover-bg-transparent hover-text-primary d-flex align-items-center gap-8"> 
-                                          <img src="assets/images/thumbs/flag1.png" alt="" className="w-32-px h-32-px border borde border-gray-100 rounded-circle flex-shrink-0" />
-                                          <span className="text-15 fw-semibold mb-0">Arabic</span>
-                                        </span>
-                                      </label>
-                                      <input className="form-check-input" type="radio" name="language" id="arabic" />
-                                    </div>
-                                    <div className="form-check form-radio d-flex align-items-center justify-content-between ps-0 mb-16">
-                                      <label className="ps-0 form-check-label line-height-1 fw-medium text-secondary-light" htmlFor="germany"> 
-                                        <span className="text-black hover-bg-transparent hover-text-primary d-flex align-items-center gap-8"> 
-                                          <img src="assets/images/thumbs/flag2.png" alt="" className="w-32-px h-32-px border borde border-gray-100 rounded-circle flex-shrink-0" />
-                                          <span className="text-15 fw-semibold mb-0">Germany</span>
-                                        </span>
-                                      </label>
-                                      <input className="form-check-input" type="radio" name="language" id="germany" />
-                                    </div>
-                                    <div className="form-check form-radio d-flex align-items-center justify-content-between ps-0 mb-16">
                                       <label className="ps-0 form-check-label line-height-1 fw-medium text-secondary-light" htmlFor="english"> 
                                         <span className="text-black hover-bg-transparent hover-text-primary d-flex align-items-center gap-8"> 
                                           <img src="assets/images/thumbs/flag3.png" alt="" className="w-32-px h-32-px border borde border-gray-100 rounded-circle flex-shrink-0" />
@@ -164,7 +146,7 @@ const HeadBar = () => {
                                       <label className="ps-0 form-check-label line-height-1 fw-medium text-secondary-light" htmlFor="spanish"> 
                                         <span className="text-black hover-bg-transparent hover-text-primary d-flex align-items-center gap-8"> 
                                           <img src="assets/images/thumbs/flag4.png" alt="" className="w-32-px h-32-px border borde border-gray-100 rounded-circle flex-shrink-0" />
-                                          <span className="text-15 fw-semibold mb-0">Spanish</span>
+                                          <span className="text-15 fw-semibold mb-0">Français</span>
                                         </span>
                                       </label>
                                       <input className="form-check-input" type="radio" name="language" id="spanish" />

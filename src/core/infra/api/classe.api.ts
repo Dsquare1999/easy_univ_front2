@@ -1,6 +1,7 @@
 import api from "./base.api";
 import * as z from "zod";
 import { ClasseSchema, MatiereSchema, StudentRefusalSchema, StudentSchema, StudentValidationSchema } from "@/core/application/schemas";
+import { StudentType } from "@/core/application/schemas/classe.schema";
 
 export const classeApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -9,13 +10,21 @@ export const classeApi = api.injectEndpoints({
                 url: "/classes",
                 method: "GET",
             }),
+            providesTags: (result) =>
+                result
+                    ? [
+                        ...result.data.map(({ id }: { id: string }) => ({ type: "Classes" as const, id })),
+                        { type: "Classes", id: "LIST" },
+                      ]
+                    : [{ type: "Classes", id: "LIST" }],
         }),
-        classeCreate: builder.mutation<any, {filiere: string, cycle: string, year: number}>({
-            query: ({ filiere, cycle, year } : z.infer<typeof ClasseSchema>) => ({
+        classeCreate: builder.mutation<any, {filiere: string, cycle: string, year: number, academic_year:string, parts: string}>({
+            query: ({ filiere, cycle, year, academic_year, parts } : z.infer<typeof ClasseSchema>) => ({
                 url: '/classes/store',
                 method: 'POST',
-                body: { filiere, cycle, year },
+                body: { filiere, cycle, year, academic_year, parts },
             }),
+            invalidatesTags: [{ type: "Classes", id: "LIST" }],
         }),
         classeRetrieve: builder.query<any, {id: string}>({
             query: ({ id } : {id: string}) => ({
@@ -28,19 +37,28 @@ export const classeApi = api.injectEndpoints({
                 url: "/students",
                 method: "GET",
             }),
+            providesTags: (result) =>
+                result
+                    ? [
+                        ...result.data.map(({ id }: { id: string }) => ({ type: "Students" as const, id })),
+                        { type: "Students", id: "LIST" },
+                      ]
+                    : [{ type: "Students", id: "LIST" }],
         }),
-        studentCreate: builder.mutation<any, {classe: string}>({
-            query: ({ classe } : z.infer<typeof StudentSchema>) => ({
+        studentCreate: builder.mutation<any, StudentType>({
+            query: (student: StudentType) => ({
                 url: '/students/store',
                 method: 'POST',
-                body: { classe },
+                body: student,
             }),
+            invalidatesTags: [{ type: "Students", id: "LIST" }],
         }),
-        studentLeave: builder.mutation<any, {classe: string}>({
-            query: ({ classe } : z.infer<typeof StudentSchema>) => ({
-                url: `/students/destroy/${classe}`,
+        studentLeave: builder.mutation<any, {classe : string}>({
+            query: (student : StudentType) => ({
+                url: `/students/destroy/${student.classe}`,
                 method: 'DELETE',
             }),
+            invalidatesTags: (result, error, { classe }) => [{ type: "Students", id: classe }],
         }),
         studentValidate: builder.mutation<any, {tag: string, titre: string, student?: string}>({
             query: ({ tag, titre, student } : z.infer<typeof StudentValidationSchema>) => ({

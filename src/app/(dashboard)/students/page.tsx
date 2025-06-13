@@ -8,17 +8,18 @@ import React, { useEffect, useRef, useState } from "react";
 import { useAppDispatch } from "@/core/application/hooks";
 import { CycleEntity } from "@/core/domain/entities/cycle.entity";
 import { useForm } from "react-hook-form";
-import { ClasseSchema, StudentValidationSchema } from "@/core/application/schemas";
+import { ClasseSchema, StudentSchema, StudentValidationSchema } from "@/core/application/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "react-toastify";
 import { Form } from "@/components/ui/form";
 import { FiliereEntity } from "@/core/domain/entities/filiere.entity";
 import { ClasseEntity, StudentEntity } from "@/core/domain/entities/classe.entity";
-import { classeCreateAction, studentListAction, studentRefusalAction, studentValidationAction } from "@/core/application/actions/classe.action";
+import { classeCreateAction, classeListAction, studentCreateAction, studentListAction, studentRefusalAction, studentValidationAction } from "@/core/application/actions/classe.action";
 import DOMPurify from 'dompurify';
 import { TagEntity } from "@/core/domain/entities/tag.entity";
-
+import { UserEntity } from "@/core/domain/entities/user.entity";
+import Select from 'react-select';
 
 
 const Students = () => {
@@ -27,8 +28,12 @@ const Students = () => {
     const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
     const dispatch = useAppDispatch();
-    const [classeData, setClasseData] = useState<ClasseEntity[] | undefined>(undefined);
-    const [filiereData, setFiliereData] = useState<FiliereEntity[] | undefined>(undefined);
+
+    const [cycles, setCycles] = useState<CycleEntity[] | undefined>(undefined);
+    const [filieres, setFilieres] = useState<FiliereEntity[] | undefined>(undefined);
+    const [classes, setClasses] = useState<ClasseEntity[] | undefined>(undefined);
+    const [users, setUsers] = useState<UserEntity[] | undefined>(undefined);
+    
     const [cycleData, setCycleData] = useState<CycleEntity[] | undefined>(undefined);
     const [studentData, setStudentData] = useState<StudentEntity[] | undefined>([]);
 
@@ -56,7 +61,15 @@ const Students = () => {
         { data: "year", title: "Année" },
 
         { data: "student", visible: false },
-        // { data: "statut", title: "Statut" },
+        { data: "statut", title: "Statut" },
+        {
+            title: "Actions",
+            data: "modify",
+            orderable: false,
+            render: function (_data: any, _type: any, row: any) {
+                return `<button class="btn btn-main rounded-4 py-4 px-10 text-sm mr-1" data-bs-toggle="modal" data-bs-target="#studentDetail" data-id="${row.id}">Détails</button>`;
+            }
+        }
     ];
 
     useEffect(() => {
@@ -115,6 +128,7 @@ const Students = () => {
                     cycle: student.classe.cycle ? student.classe.cycle.name : '',
                     title: student.titre? student.titre : 'Non défini',
                     year: student.classe.year? student.classe.year : '',
+                    statut: student.statut? student.statut : '',
 
                     student: student
                 }));
@@ -126,29 +140,48 @@ const Students = () => {
         }
     }, [studentData, tableRef]);
 
+    useEffect(() => {
+        dispatch(classeListAction())
+            .unwrap()
+            .then((classes) => {
+                console.log('classes', classes)
+                setClasses(classes.data);
+                setFilieres(classes.filieres);
+                setCycles(classes.cycles);
+                setUsers(classes.users);
+            })
+            .catch((error) => {
+                console.error("Failed to fetch classes: ", error.message || error);
+                alert("Erreur : " + (error.message || error));
+            }); 
+    }, [dispatch, setClasses, setFilieres, setCycles]);
 
 
-    const form = useForm<z.infer<typeof ClasseSchema>>({
-        resolver: zodResolver(ClasseSchema),
+    const form = useForm<z.infer<typeof StudentSchema>>({
+        resolver: zodResolver(StudentSchema),
         defaultValues: {
-          filiere: "",
-          cycle: "", 
-          year: 1,
+          classe: "",
+          user: ""
         },
     });
     
-    const onSubmit = async (values: z.infer<typeof ClasseSchema>) => {
-        alert(JSON.stringify(values))
+    const handleChange = (selectedOption: any) => {
+        form.setValue("user", selectedOption ? selectedOption.value : null);
+    };
+    const handleClasseChange = (selectedOption: any) => {
+        form.setValue("classe", selectedOption ? selectedOption.value : null);
+    };
+
+    const onSubmit = async (values: z.infer<typeof StudentSchema>) => {
+        console.log("Form values:", values);
         setIsLoading(true)
-        await dispatch(classeCreateAction(values))
+        await dispatch(studentCreateAction(values))
             .unwrap()
             .then((response: any) => {
               console.log(response)
               if(response.success){
                 toast.success(response.message);
-
                 form.reset();
-                
               }else{
                 if(response.data.errors.password){
                   response.data.errors.password.map((error:string) => {
@@ -160,7 +193,6 @@ const Students = () => {
                     toast.error(error)
                   })
                 }
-                
               }
             })
             .catch((error : any) => {
@@ -170,10 +202,43 @@ const Students = () => {
             .finally(() => {
               setIsLoading(false)
             });
-  
     };
 
-    
+
+    const userOptions = users?.map(user => ({
+        value: user.id,
+        label: (
+            <div className="flex items-center">
+                <img
+                    src={user?.profile ? `${process.env.NEXT_PUBLIC_HOST}/storage/${user?.profile}` :  "/assets/images/user_placeholder.jpg"} 
+                    alt="Profile image" 
+                    className="w-32 h-32 object-cover object-center rounded-full shadow-sm mr-2" 
+                />
+                <span className="text-gray-800">{user.lastname} {user.firstname}</span>
+            </div>
+        )
+    }));
+
+    const classesOptions = classes?.map(classe => ({
+        value: classe.id,
+        label: (
+            <div className="flex items-center gap-4 justify-between">
+                <div className="flex flex-col">
+                    <span className="text-main">Cycle</span>
+                    <span className="text-gray-800 text-xs">{classe.cycle.name}</span>
+                </div>
+                <div className="flex flex-col">
+                    <span className="text-main">Filière</span>
+                    <span className="text-gray-800 text-xs">{classe.filiere.name}</span>
+                </div>
+                <div className="flex flex-col">
+                    <span className="text-main">Academic (Year)</span>
+                    <span className="text-gray-800 text-xs">{classe.academic_year} ({classe.year} années)</span>
+                </div>
+            </div>
+        )
+    }));
+
 
     
     const form2 = useForm<z.infer<typeof StudentValidationSchema>>({
@@ -459,11 +524,11 @@ const Students = () => {
                             <li><span className="text-main-600 fw-normal text-15">Etudiants</span></li>
                         </ul>
                     </div>
-                    <button type="button" className="border btn-main rounded-pill py-8 px-20" data-bs-toggle="modal" data-bs-target="#cycleCreate">
-                        <i className="ph ph-caret-plus"></i> Ajouter un étudiant
+                    <button type="button" className="border btn-main rounded-pill py-8 px-20 text-white" data-bs-toggle="modal" data-bs-target="#studentCreate">
+                        <i className="ph ph-plus"></i> Ajouter un étudiant
                     </button>
                     
-                    <div className="modal fade" id="cycleCreate" tabIndex={-1} aria-hidden="true">
+                    <div className="modal fade" id="studentCreate" tabIndex={-1} aria-hidden="true">
                         <div className="modal-dialog">
                             <div className="modal-content">
                             <Form {...form}>
@@ -473,66 +538,29 @@ const Students = () => {
                                         <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div className="modal-body">
-                                        <div className="mb-3">
-                                            <label htmlFor="filiere" className="form-label">Choisir un utilisateur</label>
-                                            <select 
-                                                id="filiere" 
-                                                className="form-control" 
-                                                {...form.register("cycle")}
-                                            >
-                                                <option value="">Sélectionnez un utilisateur</option>
-                                                {cycleData?.map(cycle => (
-                                                    <option key={cycle.id} value={cycle.id}>
-                                                        {cycle.name}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        </div>
-                                        <div className="mb-3">
-                                            <label htmlFor="filiere" className="form-label">Choisir le cycle</label>
-                                            <select 
-                                                id="filiere" 
-                                                className="form-control" 
-                                                {...form.register("cycle")}
-                                            >
-                                                <option value="">Sélectionnez un cycle</option>
-                                                {cycleData?.map(cycle => (
-                                                    <option key={cycle.id} value={cycle.id}>
-                                                        {cycle.name}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        </div>
-                                        <div className="mb-3">
-                                            <label htmlFor="filiere" className="form-label">Choisir une Filière</label>
-                                            <select 
-                                                id="filiere" 
-                                                className="form-control" 
-                                                {...form.register("filiere")}
-                                            >
-                                                <option value="">Sélectionnez une filière</option>
-                                                {filiereData?.map(filiere => (
-                                                    <option key={filiere.id} value={filiere.id}>
-                                                        {filiere.name}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        </div>
-                                        <div className="input-group mb-3">
-                                            <input
-                                                type="number"
-                                                id="year"
-                                                className="form-control"
-                                                placeholder="Année"
-                                                {...form.register("year", {
-                                                    setValueAs: (v) => v === "" ? undefined : parseInt(v, 10),
-                                                })}
+                                        <div className="mb-20">
+                                            <label htmlFor="add-student-user" className="form-label">Choisir un utilisateur</label>
+                                            <Select 
+                                                id="add-student-user"
+                                                options={userOptions}
+                                                placeholder="Sélectionnez un utilisateur"
+                                                onChange={handleChange} 
+                                                onBlur={() => {}} 
+                                                className="z-20"
                                             />
-                                                
-                                            <div className="input-group-append">
-                                                <span className="input-group-text h-full" id="basic-addon2">année</span>
-                                            </div>
                                         </div>
+                                        <div className="mb-20">
+                                            <label htmlFor="add-student-classe" className="form-label">Choisir la classe</label>
+                                            <Select 
+                                                id="add-student-classe"
+                                                options={classesOptions}
+                                                placeholder="Sélectionnez une classe"
+                                                onChange={handleClasseChange} 
+                                                onBlur={() => {}} 
+                                                className="z-10"	
+                                            />
+                                        </div>
+                                        
                                         
                                     </div>
                                     <div className="modal-footer">
