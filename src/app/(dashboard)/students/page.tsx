@@ -418,97 +418,110 @@ const Students = () => {
                                             </div>
                                         </div>
 
-                                        {!refusing && <Form {...form2}>
-                                            <form onSubmit={form2.handleSubmit(onSubmit2)} className="mt-20 text-gray-900 border border-gray-100 px-8 py-6">
-                                            <h5 className="text-left mb-10 text-main-600">Inscription</h5>
-                                                <div className="mb-3 flex flex-wrap justify-around items-center " >
-                                                    <div className="form-check form-check-inline my-5">
-                                                        <input
-                                                            className="form-check-input"
-                                                            type="radio"
-                                                            id="titleBRS"
-                                                            value="BRS"
-                                                            {...form2.register("titre")}
-                                                        />
-                                                        <label className="ml-4" htmlFor="titleBRS">
-                                                            BRS
-                                                        </label>
-                                                    </div>
-                                                    <div className="form-check form-check-inline my-5">
-                                                        <input
-                                                            className="form-check-input"
-                                                            type="radio"
-                                                            id="titleATP"
-                                                            value="ATP"
-                                                            {...form2.register("titre")}
-                                                        />
-                                                        <label className="ml-4" htmlFor="titleATP">
-                                                            ATP
-                                                        </label>
-                                                    </div>
-                                                    <div className="form-check form-check-inline my-5">
-                                                        <input
-                                                            className="form-check-input"
-                                                            type="radio"
-                                                            id="titleSPR"
-                                                            value="SPR"
-                                                            {...form2.register("titre")}
-
-                                                        />
-                                                        <label className="ml-4" htmlFor="titleSPR">
-                                                            SPR
-                                                        </label>
-                                                    </div>
-                                                </div>
-
-                                            <div className="mb-3">
-                                                <label htmlFor="tagSelect" className="form-label">Choisir un Tag :</label>
-                                                <select
-                                                    id="tagSelect"
-                                                    className="form-select"
-                                                    {...form2.register("tag")} 
+                                        {selectedStudent?.statut === "PRE-INSCRIT" ? (
+                                            <div className="mt-20 text-gray-900 border border-gray-100 px-8 py-6">
+                                                <button 
+                                                    className="btn btn-main w-full"
+                                                    onClick={() => window.open(`${process.env.NEXT_PUBLIC_HOST}/storage/inscriptions/${selectedStudent?.file}`, '_blank')}
                                                 >
-                                                    <option value="">Sélectionnez un tag</option>
-                                                    {tagData?.map(tag => (
-                                                        <option key={tag?.id} value={tag?.id}>
-                                                        {tag?.name} ({tag.fee} Fcfa)
-                                                        </option>
-                                                    ))}
-                                                </select>
-                                            </div>
-                                            <div className="mt-20 flex justify-center items-center gap-5">
-                                                <button className="btn btn-danger" onClick={()=>setRefusing(true)} disabled={isLoading}>
-                                                    Rejeter
-                                                </button>
-                                                <button type="submit" className="btn btn-primary" disabled={isLoading}>
-                                                    {isLoading ? "Inscription en cours..." : "Inscrire"}
+                                                    Voir fiche de préinscription
                                                 </button>
                                             </div>
-                                                
-                                            </form>
-                                        </Form>}
-                                        {refusing && (
-                                            <div className="col-12 mt-20 text-gray-900 border border-gray-100 px-8 py-6">
-                                                <h5 className="text-left mb-10 text-main-600">Rejet</h5>
-                                                    <div className="editor">
-                                                        <ReactQuill
-                                                            theme="snow"
-                                                            value={why}
-                                                            onChange={setWhy}
-                                                            placeholder="Editez la raison du refus de son inscription ..."
-                                                        />
-                                                    </div>
-                                                
+                                        ) : (
+                                            <>
+                                                {!refusing && <Form {...form2}>
+                                                    <form onSubmit={form2.handleSubmit(onSubmit2)} className="mt-20 text-gray-900 border border-gray-100 px-8 py-6">
+                                                    <h5 className="text-left mb-10 text-main-600">Inscription</h5>
+                                                        <div className="mb-3 flex flex-wrap justify-around items-center " >
+                                                            <div className="form-check form-check-inline my-5">
+                                                                <input
+                                                                    className="form-check-input"
+                                                                    type="radio"
+                                                                    id="titleBRS"
+                                                                    value="BRS"
+                                                                    {...form2.register("titre")}
+                                                                />
+                                                                <label className="ml-4" htmlFor="titleBRS">
+                                                                    BRS
+                                                                </label>
+                                                            </div>
+                                                            <div className="form-check form-check-inline my-5">
+                                                                <input
+                                                                    className="form-check-input"
+                                                                    type="radio"
+                                                                    id="titleATP"
+                                                                    value="ATP"
+                                                                    {...form2.register("titre")}
+                                                                />
+                                                                <label className="ml-4" htmlFor="titleATP">
+                                                                    ATP
+                                                                </label>
+                                                            </div>
+                                                            <div className="form-check form-check-inline my-5">
+                                                                <input
+                                                                    className="form-check-input"
+                                                                    type="radio"
+                                                                    id="titleSPR"
+                                                                    value="SPR"
+                                                                    {...form2.register("titre")}
 
-                                                <div className="mt-20 flex justify-center items-center gap-5">
-                                                    <button onClick={handleRejet} className="btn btn-danger" disabled={isLoading}>
-                                                        {isLoading ? "Rejet en cours..." : "Rejeter"}
-                                                    </button>
-                                                    <button onClick={()=>setRefusing(false)} className="btn btn-secondary" disabled={isLoading}>
-                                                        Annuler
-                                                    </button>
-                                                </div>
-                                          </div>
+                                                                />
+                                                                <label className="ml-4" htmlFor="titleSPR">
+                                                                    SPR
+                                                                </label>
+                                                            </div>
+                                                        </div>
+
+                                                    <div className="mb-3">
+                                                        <label htmlFor="tagSelect" className="form-label">Choisir un Tag :</label>
+                                                        <select
+                                                            id="tagSelect"
+                                                            className="form-select"
+                                                            {...form2.register("tag")} 
+                                                        >
+                                                            <option value="">Sélectionnez un tag</option>
+                                                            {tagData?.map(tag => (
+                                                                <option key={tag?.id} value={tag?.id}>
+                                                                {tag?.name} ({tag.fee} Fcfa)
+                                                                </option>
+                                                            ))}
+                                                        </select>
+                                                    </div>
+                                                    <div className="mt-20 flex justify-center items-center gap-5">
+                                                        <button className="btn btn-danger" onClick={()=>setRefusing(true)} disabled={isLoading}>
+                                                            Rejeter
+                                                        </button>
+                                                        <button type="submit" className="btn btn-primary" disabled={isLoading}>
+                                                            {isLoading ? "Inscription en cours..." : "Inscrire"}
+                                                        </button>
+                                                    </div>
+                                                        
+                                                    </form>
+                                                </Form>}
+                                                {refusing && (
+                                                    <div className="col-12 mt-20 text-gray-900 border border-gray-100 px-8 py-6">
+                                                        <h5 className="text-left mb-10 text-main-600">Rejet</h5>
+                                                            <div className="editor">
+                                                                <ReactQuill
+                                                                    theme="snow"
+                                                                    value={why}
+                                                                    onChange={setWhy}
+                                                                    placeholder="Editez la raison du refus de son inscription ..."
+                                                                />
+                                                            </div>
+                                                        
+
+                                                        <div className="mt-20 flex justify-center items-center gap-5">
+                                                            <button onClick={handleRejet} className="btn btn-danger" disabled={isLoading}>
+                                                                {isLoading ? "Rejet en cours..." : "Rejeter"}
+                                                            </button>
+                                                            <button onClick={()=>setRefusing(false)} className="btn btn-secondary" disabled={isLoading}>
+                                                                Annuler
+                                                            </button>
+                                                        </div>
+                                                  </div>
+                                                )}
+                                            </>
                                         )}
                                     </div>
                                 </div>

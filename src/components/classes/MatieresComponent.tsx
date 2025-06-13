@@ -344,7 +344,12 @@ const MatieresComponent = ({classe, unites, teachers, onRetour} : MatieresCompon
             .then((response: any) => {
                 if (response.success) {
                     toast.success(response.message);
-                    // setReleveData(response.data);
+                    // Ouvrir the file at response.pdfresponse.filename in a new tab
+                    const fileUrl = `${process.env.NEXT_PUBLIC_HOST}/storage/releves/${response.pdfresponse.filename}`;
+                    const newTab = window.open(fileUrl, '_blank');
+                    if (newTab) {
+                        newTab.focus();
+                    }
                 } else {
                     toast.error(response.message);
                 }
