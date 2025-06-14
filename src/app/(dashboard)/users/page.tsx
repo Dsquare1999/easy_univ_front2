@@ -173,7 +173,7 @@ const Usersection = () => {
                     <div className="flex-between flex-wrap gap-8 mt-20">
                         <a href="#" className="btn btn-outline-gray rounded-pill py-9 flex-align gap-4">
                             <span className="d-flex text-xl"><i className="ph ph-arrow-left"></i></span> 
-                            Previous
+                            Précédent
                         </a>
                         <ul className="pagination flex-align flex-wrap">
                             <li className="page-item active">
@@ -199,7 +199,7 @@ const Usersection = () => {
                             </li>
                         </ul>
                         <a href="#" className="btn btn-outline-main rounded-pill py-9 flex-align gap-4">
-                            Next <span className="d-flex text-xl"><i className="ph ph-arrow-right"></i></span> 
+                            Suivant <span className="d-flex text-xl"><i className="ph ph-arrow-right"></i></span> 
                         </a>
                     </div>
                     

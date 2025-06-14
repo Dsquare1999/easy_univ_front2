@@ -370,7 +370,7 @@ const Teacher = () => {
                 <span className="d-flex text-xl">
                   <i className="ph ph-arrow-left"></i>
                 </span>
-                Previous
+                Précédent
               </a>
               <ul className="pagination flex-align flex-wrap">
                 <li className="page-item active">
@@ -434,7 +434,7 @@ const Teacher = () => {
                 href="#"
                 className="btn btn-outline-main rounded-pill py-9 flex-align gap-4"
               >
-                Next{" "}
+                Suivant{" "}
                 <span className="d-flex text-xl">
                   <i className="ph ph-arrow-right"></i>
                 </span>
