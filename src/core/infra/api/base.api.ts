@@ -14,7 +14,7 @@ import { authApi } from "../api/auth.api";
 
 // create a new mutex
 const mutex = new Mutex();
-const baseURL = `${process.env.NEXT_PUBLIC_HOST}/api/v1`
+const baseURL = `${process.env.NEXT_PUBLIC_HOST}/api/api/v1`
 
 const baseQuery = fetchBaseQuery({
   baseUrl: baseURL,
